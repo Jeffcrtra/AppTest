@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>5:15 Carrusel Monte Alto – Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>5.25 Monte Alto – Calculadora (Lab Carrusel)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --bg: #0f1115;
-      --card-bg: #1a1d23;
+      --bg-main: #0f1115;
+      --bg-light: #fdf9f0;
+      --bg-dark: #141417;
       --accent: #ffd54a;
-      --radius-xl: 26px;
-      --shadow-soft: 0 20px 40px rgba(0, 0, 0, 0.5);
-      --text-main: #f7f5ff;
-      --text-muted: #a0a3b5;
+      --accent-soft: #ffe089;
+      --text-main: #1b1b1f;
+      --text-muted: #77757f;
+      --pill-bg: #fff7e3;
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.45);
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Roboto", sans-serif;
     }
 
     * {
@@ -22,27 +28,104 @@
     }
 
     body {
-      min-height: 100vh;
+      font-family: var(--font-main);
       background: radial-gradient(circle at top, #252735 0, #05060a 60%);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Roboto", sans-serif;
+      align-items: stretch;
       color: var(--text-main);
     }
 
-    .carousel-shell {
+    .app {
       width: 100%;
       max-width: 420px;
-      padding: 16px;
+      margin: 16px;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      border-radius: 32px;
+      overflow: hidden;
+    }
+
+    .card-top {
+      background: rgba(255, 254, 250, 0.96);
+      border-radius: 32px 32px 0 0;
+      padding: 16px 18px 24px 18px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      z-index: 2;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .pill-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .title-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    h1 {
+      font-size: 16px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .hero-name-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .hero-name {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.1;
+      color: #141417;
+    }
+
+    .hero-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #d88d17;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* CARRUSEL */
+
+    .hero-carousel-wrap {
+      margin: 16px 0 8px;
       position: relative;
     }
 
     .carousel-viewport {
       position: relative;
-      overflow: visible; /* ver vecinos */
-      padding: 8px 0;
+      overflow: visible;
+      padding: 6px 0;
     }
 
     .carousel-viewport::before,
@@ -51,7 +134,7 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 40px;
+      width: 36px;
       pointer-events: none;
       z-index: 3;
     }
@@ -60,8 +143,8 @@
       left: 0;
       background: linear-gradient(
         to right,
-        var(--bg) 0%,
-        rgba(15, 17, 21, 0) 100%
+        rgba(253,249,240,1) 0%,
+        rgba(253,249,240,0) 100%
       );
     }
 
@@ -69,24 +152,25 @@
       right: 0;
       background: linear-gradient(
         to left,
-        var(--bg) 0%,
-        rgba(15, 17, 21, 0) 100%
+        rgba(253,249,240,1) 0%,
+        rgba(253,249,240,0) 100%
       );
     }
 
     .carousel-track {
       display: flex;
-      gap: 16px;
+      gap: 14px;
       transition: transform 0.45s ease;
       will-change: transform;
     }
 
     .slide {
-      flex: 0 0 80%;
-      background: var(--card-bg);
-      border-radius: var(--radius-xl);
-      padding: 14px;
-      box-shadow: var(--shadow-soft);
+      flex: 0 0 78%;
+      border-radius: 28px;
+      background: radial-gradient(circle at top, #f6e1c8 0, #d9a66b 60%, #b6793e 100%);
+      height: 160px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+      overflow: hidden;
       position: relative;
       transform-origin: center center;
       transition:
@@ -95,110 +179,85 @@
         box-shadow 0.35s ease;
       opacity: 0.25;
       transform: scale(0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .slide.active {
       opacity: 1;
       transform: scale(1);
-      box-shadow: 0 26px 55px rgba(0, 0, 0, 0.65);
+      box-shadow: 0 24px 52px rgba(0,0,0,0.45);
     }
 
     .slide.prev,
     .slide.next {
-      opacity: 0.55;
+      opacity: 0.6;
       transform: scale(0.95);
     }
 
-    .slide-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 8px;
-    }
-
-    .slide-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .slide-price {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
-      text-align: right;
-    }
-
-    .slide-tagline {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
-
-    .slide-image {
-      border-radius: 22px;
-      overflow: hidden;
-      background: radial-gradient(circle at top, #f6e1c8 0, #b57435 60%, #5c2c08 100%);
-      height: 160px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    .slide-image img {
-      width: 110%;
+    .slide img {
+      width: 112%;
       height: auto;
       object-fit: cover;
       transform: translateY(4px);
     }
 
-    .slide-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .slide-label {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
       font-size: 11px;
-      color: var(--text-muted);
-      gap: 8px;
+      color: #5a3b15;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .slide-footer strong {
-      color: var(--text-main);
+    .slide-label span.badge {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: #ffcf6f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
     }
 
     /* Flechas encima del carrusel */
+
     .arrow-btn {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
+      width: 34px;
+      height: 34px;
       border-radius: 999px;
       border: none;
       cursor: pointer;
-      background: radial-gradient(circle at 30% 20%, #2a2d35 0, #090b10 70%);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+      background: radial-gradient(circle at 30% 20%, #ffffff 0, #d0c4b1 70%);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.3);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 4;
-      color: var(--text-main);
+      color: #3a3325;
       font-size: 18px;
     }
 
     .arrow-btn:active {
-      transform: translateY(-50%) scale(0.96);
+      transform: translateY(-50%) scale(0.95);
     }
 
-    .arrow-prev {
-      left: -6px;
-    }
-
-    .arrow-next {
-      right: -6px;
-    }
+    .arrow-prev { left: -4px; }
+    .arrow-next { right: -4px; }
 
     .dots {
-      margin-top: 10px;
+      margin-top: 8px;
       display: flex;
       justify-content: center;
       gap: 6px;
@@ -209,43 +268,278 @@
       width: 6px;
       height: 6px;
       border-radius: 999px;
-      background: #3b3f4a;
+      background: #d1c8ba;
       transition: background 0.2s, transform 0.2s;
     }
 
     .dot.active {
-      background: var(--accent);
+      background: #f0b04a;
       transform: scale(1.4);
+    }
+
+    .hero-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .hero-desc {
+      font-size: 13px;
+      margin-top: 4px;
+      color: #4e4b54;
+    }
+
+    /* bottom card (oscura) */
+
+    .card-bottom {
+      margin-top: -18px;
+      background: var(--bg-dark);
+      border-radius: 28px;
+      padding: 20px 18px 18px;
+      color: #f6f5ff;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.4);
+    }
+
+    .bottom-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .bottom-header h2 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .badge-soft {
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .product-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.02);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .product-row.active {
+      background: rgba(255,255,255,0.16);
+      transform: translateY(-1px);
+    }
+
+    .product-thumb {
+      width: 46px;
+      height: 46px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #f3d7a2 0, #b3743a 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-thumb img {
+      width: 120%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .product-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .product-desc {
+      font-size: 11px;
+      color: #a49fb0;
+    }
+
+    .product-meta {
+      text-align: right;
+      font-size: 11px;
+      color: #c3bdce;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .product-meta strong {
+      font-size: 13px;
+      color: #ffd976;
+    }
+
+    .bottom-footer {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .subtotal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #d9d4e5;
+    }
+
+    .subtotal-row strong {
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .btn-primary {
+      margin-top: 4px;
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #161616;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    }
+
+    .btn-primary span.icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 16px;
+    }
+
+    .points-row {
+      font-size: 11px;
+      color: #ada6c7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .points-row span.highlight {
+      color: #ffe789;
+      font-weight: 600;
+    }
+
+    @media (max-width: 360px) {
+      .hero-name {
+        font-size: 21px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="carousel-shell">
-  <div class="carousel-viewport">
-    <div class="carousel-track" id="carouselTrack">
-      <!-- Slides generados con JS -->
+<div class="app">
+  <div class="card-top">
+    <header>
+      <div class="pill-icon" title="Atrás">‹</div>
+      <div class="pill-icon" title="Inicio">🏠</div>
+      <div class="pill-icon" title="Compartir">⟳</div>
+    </header>
+
+    <div class="title-section">
+      <h1>Monte Alto – Calculadora</h1>
+      <div class="hero-name-row">
+        <div class="hero-name" id="heroName">Tex-Mex</div>
+        <div class="hero-price" id="heroPrice">₡8 500 / kg</div>
+      </div>
+      <div class="hero-sub" id="heroSub">Chorizo artesanal Monte Alto</div>
     </div>
 
-    <button class="arrow-btn arrow-prev" id="prevBtn" aria-label="Anterior">
-      ‹
-    </button>
-    <button class="arrow-btn arrow-next" id="nextBtn" aria-label="Siguiente">
-      ›
-    </button>
+    <div class="hero-carousel-wrap">
+      <div class="carousel-viewport">
+        <div class="carousel-track" id="carouselTrack">
+          <!-- slides generados por JS -->
+        </div>
+        <button class="arrow-btn arrow-prev" id="prevBtn" aria-label="Anterior">‹</button>
+        <button class="arrow-btn arrow-next" id="nextBtn" aria-label="Siguiente">›</button>
+      </div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <div class="hero-meta-row">
+      <span id="heroMeta">Rinde aprox. 3–4 porciones.</span>
+      <span>500 g sugeridos</span>
+    </div>
+    <p class="hero-desc" id="heroDesc">
+      Molienda fresca con especias tostadas y un toque ahumado.
+    </p>
   </div>
 
-  <div class="dots" id="dots"></div>
+  <div class="card-bottom">
+    <div class="bottom-header">
+      <h2>Nuestros chorizos</h2>
+      <span class="badge-soft">Toca para seleccionar</span>
+    </div>
+
+    <div class="product-list" id="productList">
+      <!-- filas generadas por JS -->
+    </div>
+
+    <div class="bottom-footer">
+      <div class="subtotal-row">
+        <span>Subtotal estimado (500 g)</span>
+        <strong id="subtotalDisplay">₡0</strong>
+      </div>
+      <button class="btn-primary" id="addBtn">
+        <span>Agregar al carrito (demo)</span>
+        <span class="icon">＋</span>
+      </button>
+      <div class="points-row">
+        <span>Puntos por esta compra:</span>
+        <span class="highlight" id="pointsDisplay">0 pts</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-  // Productos Monte Alto – DEMO
+  // Productos Monte Alto – laboratorio carrusel
   const PRODUCTS = [
     {
       id: "texmex",
       nombre: "Tex-Mex",
       precioKg: 8500,
+      favorito: true,
+      picanteIcon: "🌶🌶",
       tagline: "Chorizo artesanal picante",
-      desc: "Molienda fresca con especias tostadas y un toque ahumado.",
+      descHero: "Molienda fresca con especias tostadas y un toque ahumado.",
+      descCorta: "Especiado, ahumado y ligeramente picante.",
       rinde: "Rinde 3–4 porciones",
       img: "Tex-Mex.png"
     },
@@ -253,8 +547,11 @@
       id: "caribeno",
       nombre: "Caribeño",
       precioKg: 8700,
+      favorito: false,
+      picanteIcon: "🌶",
       tagline: "Coco natural + chile panameño",
-      desc: "Ajo fresco, coco natural y chile panameño estilo costero.",
+      descHero: "Ajo fresco, coco natural y chile panameño estilo costero.",
+      descCorta: "Toque caribeño con coco y chile panameño.",
       rinde: "Perfecto para 3 platos",
       img: "Caribeño.png"
     },
@@ -262,8 +559,11 @@
       id: "tico",
       nombre: "Chorizo Costarricense Casero",
       precioKg: 8300,
+      favorito: true,
+      picanteIcon: "🇨🇷",
       tagline: "Achiote, ajo y tradición local",
-      desc: "Receta casera con achiote, ajo fresco y especias ticas.",
+      descHero: "Receta casera con achiote, ajo fresco y especias ticas.",
+      descCorta: "Sabor tico clásico para desayuno y choripán.",
       rinde: "Ideal para desayunos y choripanes",
       img: "Criollo.png"
     },
@@ -271,8 +571,11 @@
       id: "argentino",
       nombre: "Criollo Argentino",
       precioKg: 8300,
+      favorito: true,
+      picanteIcon: "🥩",
       tagline: "Clásico para parrilla",
-      desc: "Posta y panceta en equilibrio, sabor limpio y jugoso.",
+      descHero: "Posta y panceta en equilibrio, sabor limpio y jugoso.",
+      descCorta: "Clásico parrillero, mezcla de posta y panceta.",
       rinde: "Ideal para la parrilla",
       img: "Argentino.png"
     },
@@ -280,8 +583,11 @@
       id: "bratwurst",
       nombre: "Bratwurst",
       precioKg: 8900,
+      favorito: false,
+      picanteIcon: "🥨",
       tagline: "Suave, mantecoso, estilo alemán",
-      desc: "Suave, jugoso, perfecto para hot dogs premium.",
+      descHero: "Suave, jugoso, perfecto para hot dogs premium.",
+      descCorta: "Suave estilo alemán para panes.",
       rinde: "Para 3–4 panes",
       img: "Bratwurst.png"
     },
@@ -289,66 +595,80 @@
       id: "tocineta",
       nombre: "Tocineta Ahumada",
       precioKg: 10000,
+      favorito: false,
+      picanteIcon: "🥓",
       tagline: "Laminada, ahumada en frío",
-      desc: "Tocineta ahumada lentamente, ideal para desayunos y burgers.",
+      descHero: "Tocineta ahumada lentamente, ideal para desayunos y burgers.",
+      descCorta: "Láminas ahumadas para todo.",
       rinde: "Rinde varias preparaciones",
       img: "Tocineta.png"
     },
     {
       id: "combo",
       nombre: "Combo surtido Monte Alto",
-      precioKg: 0, // se maneja como combo, no por kg
+      precioKg: 0, // se maneja como combo
+      favorito: true,
+      picanteIcon: "⭐",
       tagline: "500 g de cada chorizo",
-      desc: "Degustación completa: Tex-Mex, Caribeño, Tico, Argentino y Bratwurst.",
-      rinde: "Pack de aprox. 2.5 kg",
+      descHero: "Degustación completa: 500 g de cada chorizo Monte Alto.",
+      descCorta: "Pack de 2.5 kg para compartir.",
+      rinde: "Ideal para parrilladas y regalos",
       img: "Combo.png"
     }
   ];
+
+  const HERO_NAME = document.getElementById("heroName");
+  const HERO_PRICE = document.getElementById("heroPrice");
+  const HERO_SUB = document.getElementById("heroSub");
+  const HERO_META = document.getElementById("heroMeta");
+  const HERO_DESC = document.getElementById("heroDesc");
 
   const track = document.getElementById("carouselTrack");
   const dotsContainer = document.getElementById("dots");
   const prevBtn = document.getElementById("prevBtn");
   const nextBtn = document.getElementById("nextBtn");
 
+  const PRODUCT_LIST = document.getElementById("productList");
+  const SUBTOTAL_DISPLAY = document.getElementById("subtotalDisplay");
+  const POINTS_DISPLAY = document.getElementById("pointsDisplay");
+  const ADD_BTN = document.getElementById("addBtn");
+
   let currentIndex = 0;
   let slides = [];
-  let gapPx = 16; // mismo que en el CSS
+  const gapPx = 14;
+  const gramosBase = 500;
+  const colonesPorPunto = 100;
 
   function formatoColones(valor) {
     return "₡" + valor.toLocaleString("es-CR");
   }
 
+  function calcularSubtotal(prod, gramos) {
+    if (!prod.precioKg || prod.precioKg <= 0) return 0;
+    return Math.round(prod.precioKg * (gramos / 1000));
+  }
+
+  /* ----- CARRUSEL ----- */
+
   function createSlides() {
     PRODUCTS.forEach((p, idx) => {
-      const slide = document.createElement("article");
+      const slide = document.createElement("div");
       slide.className = "slide";
       slide.dataset.index = idx.toString();
 
-      const priceText =
-        p.precioKg && p.precioKg > 0
-          ? `${formatoColones(p.precioKg)} / kg`
-          : "Combo surtido";
-
       slide.innerHTML = `
-        <div class="slide-header">
-          <div class="slide-title">${p.nombre}</div>
-          <div class="slide-price">${priceText}</div>
-        </div>
-        <div class="slide-tagline">${p.tagline}</div>
-        <div class="slide-image">
-          <img src="${p.img}" alt="${p.nombre}">
-        </div>
-        <div class="slide-footer">
-          <span>${p.desc}</span>
-          <span><strong>${p.rinde}</strong></span>
-        </div>
+        <span class="slide-label">
+          <span class="badge">${p.picanteIcon || "★"}</span>
+          ${p.favorito ? "Favorito" : "Monte Alto"}
+        </span>
+        <img src="${p.img}" alt="${p.nombre}">
       `;
 
       slide.addEventListener("click", () => {
-        const idx = Number(slide.dataset.index);
-        if (idx !== currentIndex) {
-          currentIndex = idx;
-          updateCarousel();
+        const index = Number(slide.dataset.index);
+        if (index !== currentIndex) {
+          currentIndex = index;
+          updateUI();
         }
       });
 
@@ -357,31 +677,28 @@
 
     slides = Array.from(track.querySelectorAll(".slide"));
 
-    // Dots
+    // dots
     PRODUCTS.forEach((_p, idx) => {
       const d = document.createElement("div");
       d.className = "dot";
       d.dataset.index = idx.toString();
       d.addEventListener("click", () => {
         currentIndex = idx;
-        updateCarousel();
+        updateUI();
       });
       dotsContainer.appendChild(d);
     });
   }
 
-  function updateClasses() {
-    slides.forEach((s) => {
-      s.classList.remove("active", "prev", "next");
-    });
-
+  function updateCarouselClasses() {
+    slides.forEach(s => s.classList.remove("active","prev","next"));
     const total = slides.length;
-    const prevIndex = (currentIndex - 1 + total) % total;
-    const nextIndex = (currentIndex + 1) % total;
+    const prevIdx = (currentIndex - 1 + total) % total;
+    const nextIdx = (currentIndex + 1) % total;
 
     slides[currentIndex].classList.add("active");
-    slides[prevIndex].classList.add("prev");
-    slides[nextIndex].classList.add("next");
+    slides[prevIdx].classList.add("prev");
+    slides[nextIdx].classList.add("next");
   }
 
   function updateDots() {
@@ -399,29 +716,127 @@
     track.style.transform = `translateX(-${offset}px)`;
   }
 
-  function updateCarousel() {
-    updateClasses();
-    updateDots();
-    updateTrackPosition();
+  /* ----- LISTA INFERIOR ----- */
+
+  function renderProductList() {
+    PRODUCT_LIST.innerHTML = "";
+    PRODUCTS.forEach((prod, idx) => {
+      const row = document.createElement("div");
+      row.className = "product-row";
+      row.dataset.index = idx.toString();
+
+      const thumb = document.createElement("div");
+      thumb.className = "product-thumb";
+      const img = document.createElement("img");
+      img.src = prod.img;
+      img.alt = prod.nombre;
+      thumb.appendChild(img);
+
+      const info = document.createElement("div");
+      info.className = "product-info";
+      const name = document.createElement("div");
+      name.className = "product-name";
+      name.textContent = prod.nombre;
+      const desc = document.createElement("div");
+      desc.className = "product-desc";
+      desc.textContent = prod.descCorta;
+      info.appendChild(name);
+      info.appendChild(desc);
+
+      const meta = document.createElement("div");
+      meta.className = "product-meta";
+      const price = document.createElement("div");
+      price.innerHTML = prod.precioKg > 0
+        ? `<strong>${formatoColones(prod.precioKg)}</strong>`
+        : `<strong>Combo</strong>`;
+      const rinde = document.createElement("div");
+      rinde.textContent = prod.rinde;
+      meta.appendChild(price);
+      meta.appendChild(rinde);
+
+      row.appendChild(thumb);
+      row.appendChild(info);
+      row.appendChild(meta);
+
+      row.addEventListener("click", () => {
+        currentIndex = idx;
+        updateUI();
+      });
+
+      PRODUCT_LIST.appendChild(row);
+    });
   }
 
+  function marcarFilaActiva() {
+    const rows = PRODUCT_LIST.querySelectorAll(".product-row");
+    rows.forEach((r, idx) => {
+      r.classList.toggle("active", idx === currentIndex);
+    });
+  }
+
+  /* ----- HERO + SUBTOTAL/PUNTOS ----- */
+
+  function updateHero() {
+    const prod = PRODUCTS[currentIndex];
+    HERO_NAME.textContent = prod.nombre;
+    HERO_PRICE.textContent = prod.precioKg > 0
+      ? `${formatoColones(prod.precioKg)} / kg`
+      : "Combo surtido";
+    HERO_SUB.textContent = prod.tagline || "Chorizo artesanal Monte Alto";
+    HERO_META.textContent = prod.rinde;
+    HERO_DESC.textContent = prod.descHero;
+
+    const subtotal = calcularSubtotal(prod, gramosBase);
+    SUBTOTAL_DISPLAY.textContent = subtotal > 0
+      ? formatoColones(subtotal)
+      : "Según detalle de combo";
+
+    const puntos = Math.floor(subtotal / colonesPorPunto);
+    POINTS_DISPLAY.textContent = puntos + " pts";
+  }
+
+  /* ----- BOTÓN AGREGAR (DEMO) ----- */
+
+  ADD_BTN.addEventListener("click", () => {
+    const prod = PRODUCTS[currentIndex];
+    const subtotal = calcularSubtotal(prod, gramosBase);
+    const msg = `Agregar al carrito (DEMO):\n\n` +
+      `${prod.nombre} – ${gramosBase} g\n` +
+      (subtotal > 0 ? `Subtotal aprox: ${formatoColones(subtotal)}\n` : "Combo, precio según detalle.\n") +
+      `\n(En esta app de laboratorio todavía no se envía nada al Google Sheet 😉)`;
+    alert(msg);
+  });
+
+  /* ----- CONTROL FLECHAS Y RESIZE ----- */
+
   prevBtn.addEventListener("click", () => {
-    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-    updateCarousel();
+    currentIndex = (currentIndex - 1 + PRODUCTS.length) % PRODUCTS.length;
+    updateUI();
   });
 
   nextBtn.addEventListener("click", () => {
-    currentIndex = (currentIndex + 1) % slides.length;
-    updateCarousel();
+    currentIndex = (currentIndex + 1) % PRODUCTS.length;
+    updateUI();
   });
 
   window.addEventListener("resize", () => {
     updateTrackPosition();
   });
 
-  // Inicialización
+  /* ----- ORQUESTA FINAL ----- */
+
+  function updateUI() {
+    updateCarouselClasses();
+    updateDots();
+    updateTrackPosition();
+    updateHero();
+    marcarFilaActiva();
+  }
+
+  // inicialización
   createSlides();
-  updateCarousel();
+  renderProductList();
+  updateUI();
 </script>
 </body>
 </html>
