@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>12:20 Monte Alto – Calculadora de Embutidos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #111827;
+      color: #f9fafb;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    a {
+      color: #93c5fd;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .card {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #1f2937;
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem 1.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: #d1d5db;
+      font-size: 0.9rem;
+    }
+
+    select, input, button, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.55rem 0.8rem;
+      border-radius: 0.5rem;
+      border: 1px solid #374151;
+      background: #0f172a;
+      color: #f9fafb;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+      transition:
+        transform 0.08s ease-out,
+        box-shadow 0.08s ease-out,
+        background-color 0.15s ease-out;
+    }
+
+    button:active {
+      transform: scale(0.97) translateY(1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    button.primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    button.secondary {
+      background: #374151;
+      color: white;
+    }
+
+    #btn-agregar-carrito {
+      background: #fbbf24;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .summary-box {
+      background: #030712;
+      border: 1px dashed #4b5563;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+
+    .product-image-wrapper {
+      text-align: center;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .product-image-wrapper img {
+      max-width: 50%;
+      display: block;
+      margin: 0 auto;
+      border-radius: 0.75rem;
+      border: 1px solid #374151;
+    }
+
+    .muted {
+      color:#6b7280;
+      font-size:0.85rem;
+    }
+
+    .error-text {
+      color:#fecaca;
+      font-size:0.9rem;
+      min-height:1em;
+    }
+
+    #status {
+      white-space:pre-line;
+      margin-top:0.75rem;
+      font-size:0.9rem;
+    }
+
+    #status.status-box-success {
+      background:#022c22;
+      border:1px solid #10b981;
+      padding:0.75rem;
+      border-radius:0.5rem;
+      color:#d1fae5;
+    }
+
+    /* ICONO CARRITO */
+    #cart-icon {
+      position:absolute;
+      top:0.75rem;
+      right:0.75rem;
+      display:flex;
+      align-items:center;
+      gap:0.4rem;
+      background:#0f172a;
+      padding:0.35rem 0.7rem;
+      border-radius:999px;
+      border:1px solid #374151;
+      font-size:0.9rem;
+      cursor:pointer;
+      user-select:none;
+    }
+    #cart-icon span.cart-emoji {
+      font-size:1.1rem;
+    }
+    #cart-count {
+      background:#fbbf24;
+      color:#111827;
+      padding:0.1rem 0.45rem;
+      border-radius:999px;
+      font-weight:700;
+      font-size:0.8rem;
+      min-width:1.4rem;
+      text-align:center;
+    }
+
+    .promo-box {
+      margin-top:0.5rem;
+      font-size:0.85rem;
+    }
+    .promo-box label {
+      display:flex;
+      align-items:center;
+      gap:0.4rem;
+      margin-bottom:0.4rem;
+    }
+    .promo-box input[type="checkbox"] {
+      width:auto;
+      margin-bottom:0;
+    }
+
+    /* BACKDROP + DRAWER */
+    .cart-backdrop {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.4);
+      display:none;
+      z-index:900;
+    }
+
+    .cart-drawer {
+      position:fixed;
+      top:0;
+      right:0;
+      width:320px;
+      height:100vh;
+      background:#020617;
+      box-shadow:-4px 0 20px rgba(0,0,0,0.6);
+      z-index:1000;
+      display:flex;
+      flex-direction:column;
+      padding:1rem;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+    }
+    .cart-drawer.open {
+      transform: translateX(0);
+    }
+
+    .cart-drawer-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:0.75rem;
+    }
+    .cart-drawer-header h3 {
+      margin:0;
+      font-size:1rem;
+    }
+
+    .icon-button {
+      background:transparent;
+      border:none;
+      color:#9ca3af;
+      font-size:1.2rem;
+      padding:0.1rem 0.3rem;
+      cursor:pointer;
+      box-shadow:none;
+    }
+    .icon-button:active {
+      transform:scale(0.9);
+      box-shadow:none;
+    }
+
+    .cart-drawer-body {
+      flex:1;
+      overflow-y:auto;
+      font-size:0.9rem;
+      border-top:1px solid #111827;
+      border-bottom:1px solid #111827;
+      padding:0.5rem 0;
+    }
+
+    .cart-item-row {
+      margin-bottom:0.5rem;
+    }
+
+    .cart-drawer-footer {
+      margin-top:0.75rem;
+      padding-bottom: 2.5rem; /* para no pegar con la barra inferior de los celulares */
+    }
+
+    .w-full {
+      width:100%;
+    }
+
+    #discount-code {
+      text-transform:uppercase;
+    }
+
+    /* PUNTOS LEALTAD */
+    #puntos-info {
+      min-height: 1.2em;
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+    #puntos-info.has-points {
+      color: #fbbf24;
+      font-weight: 600;
+    }
+    #puntos-info.no-points {
+      color: #9ca3af;
+    }
+
+    /* ===================== TOGGLE TEMA ===================== */
+    .theme-toggle {
+      position: fixed;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 1100;
+      display: flex;
+      gap: 0.25rem;
+      font-size: 0.8rem;
+    }
+
+    .theme-pill {
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: #111827;
+      color: #f9fafb;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+    }
+
+    .theme-pill:active {
+      transform: scale(0.95);
+    }
+
+    .theme-pill-active {
+      box-shadow: 0 0 0 2px #fbbf24;
+    }
+
+    /* TEMA CLARO */
+    body[data-theme="light"] {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    body[data-theme="light"] .card {
+      background: #ffffff;
+    }
+
+    body[data-theme="light"] select,
+    body[data-theme="light"] input,
+    body[data-theme="light"] button,
+    body[data-theme="light"] textarea {
+      background: #f9fafb;
+      color: #111827;
+      border-color: #d1d5db;
+    }
+
+    body[data-theme="light"] .summary-box {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+
+    body[data-theme="light"] .muted {
+      color: #6b7280;
+    }
+
+    body[data-theme="light"] #cart-icon {
+      background: #f9fafb;
+      border-color: #e5e7eb;
+    }
+
+    body[data-theme="light"] .cart-drawer {
+      background: #f9fafb;
+    }
+
+    body[data-theme="light"] .cart-drawer-body {
+      border-top-color: #e5e7eb;
+      border-bottom-color: #e5e7eb;
+    }
+
+    body[data-theme="light"] #status.status-box-success {
+      background: #ecfdf5;
+      border-color: #16a34a;
+      color: #166534;
+    }
+
+    body[data-theme="light"] a {
+      color: #2563eb;
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+  <!-- Toggle claro / oscuro -->
+  <div class="theme-toggle">
+    <button id="btn-theme-dark" class="theme-pill theme-pill-active">🌙</button>
+    <button id="btn-theme-light" class="theme-pill">☀️</button>
+  </div>
+
+  <h1>Monte Alto – Calculadora</h1>
+
+  <!-- Sonidos -->
+  <audio id="sound-add" src="click-add.mp3" preload="auto"></audio>
+  <audio id="sound-send" src="click-send.mp3" preload="auto"></audio>
+
+  <div class="card">
+
+    <div id="cart-icon">
+      <span class="cart-emoji">🛒</span>
+      <span id="cart-count">0</span>
+    </div>
+
+    <!-- PASO 1 -->
+    <div id="step-datos" class="step active">
+      <h3>Paso 1 · Tus datos</h3>
+
+      <div class="row">
+        <div>
+          <label>Teléfono</label>
+          <input id="telefono" type="tel" placeholder="Ej: 6066-8322" />
+        </div>
+
+        <div>
+          <label>Nombre</label>
+          <input id="nombre" type="text" placeholder="Tu nombre" />
+        </div>
+      </div>
+
+      <div id="puntos-info"></div>
+      <div id="datos-error" class="error-text"></div>
+
+      <button id="btn-ir-productos" class="primary" disabled>Continuar</button>
+    </div>
+
+    <!-- PASO 2 -->
+    <div id="step-producto" class="step">
+      <h3>Paso 2 · Escogé tu chorizo</h3>
+
+      <label>Tipo de chorizo</label>
+      <select id="producto">
+        <option value="">— Selecciona un producto —</option>
+      </select>
+
+      <div class="product-image-wrapper" id="product-image-wrapper">
+        <img id="product-image" src="" />
+        <div class="muted" id="product-image-caption"></div>
+      </div>
+
+      <label>Peso por paquete</label>
+      <select id="peso">
+        <option value="">Selecciona el peso...</option>
+      </select>
+
+      <label>Número de paquetes</label>
+      <input id="cantidad" type="number" min="1" value="1"/>
+
+      <div class="summary-box">
+        Subtotal: <strong id="subtotal-linea">₡0</strong>
+      </div>
+
+      <label id="label-notas">Notas (opcional)</label>
+      <textarea id="comentarios" rows="3" placeholder="Ej: Con poco picante"></textarea>
+
+      <button id="btn-agregar-carrito">Agregar al carrito</button>
+      <button id="btn-comprar-ya" class="primary">Comprar de una vez</button>
+    </div>
+
+    <!-- PASO 3 -->
+    <div id="step-cliente" class="step">
+      <h3>Paso 3 · Confirmación del pedido</h3>
+
+      <label id="label-descuento">Código de descuento (opcional)</label>
+      <input id="discount-code" type="text" placeholder="Ej: MONTEALTO10" />
+
+      <div id="sinpe-box" class="summary-box">
+        <strong>Pago por SINPE móvil (BAC):</strong><br>
+        Enviá el monto total al número <strong>6066-8322</strong> (Marianela Esquivel).<br>
+        En el detalle indicá tu orden.
+      </div>
+
+      <div class="promo-box">
+        <label>
+          <input type="checkbox" id="chk-promos" />
+          <span>Quiero recibir promociones por WhatsApp a este mismo número.</span>
+        </label>
+      </div>
+
+      <!-- se eliminó el div resumen-final para no mostrar caja vacía -->
+
+      <button id="btn-volver-productos" class="secondary">Volver</button>
+      <button id="btn-confirmar" class="primary">Confirmar pedido</button>
+
+      <div id="status" class="muted"></div>
+      <button id="btn-nuevo-pedido" class="secondary" style="margin-top:0.75rem; display:none;">
+        Hacer otro pedido
+      </button>
+    </div>
+
+  </div>
+
+  <p class="muted" style="text-align:center; margin-top:0.75rem; font-size:0.75rem;">
+    Calculadora web realizada por
+    <a href="https://www.linkedin.com/in/jeffrey-trigueros-371191123/"
+       target="_blank" rel="noopener noreferrer">Jeffrey Trigueros</a>.
+  </p>
+
+  <div id="cart-backdrop" class="cart-backdrop"></div>
+
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-drawer-header">
+      <h3>Tu carrito</h3>
+      <button id="btn-cart-close" class="icon-button">&times;</button>
+    </div>
+    <div id="cart-drawer-body" class="cart-drawer-body">
+      <p class="muted">Tu carrito está vacío.</p>
+    </div>
+    <div class="cart-drawer-footer">
+      <div class="muted">
+        Total: <strong id="cart-drawer-total">₡0</strong>
+      </div>
+      <button id="btn-go-confirm" class="primary w-full" style="margin-top:0.5rem;">
+        Ir a confirmar pedido
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+  /* ===================== TEMA CLARO/OSCURO ===================== */
+  function applyTheme(theme) {
+    const body = document.body;
+    const btnDark = document.getElementById("btn-theme-dark");
+    const btnLight = document.getElementById("btn-theme-light");
+
+    if (!body || !btnDark || !btnLight) return;
+
+    if (theme === "light") {
+      body.setAttribute("data-theme", "light");
+    } else {
+      theme = "dark";
+      body.setAttribute("data-theme", "dark");
+    }
+
+    btnDark.classList.toggle("theme-pill-active", theme === "dark");
+    btnLight.classList.toggle("theme-pill-active", theme === "light");
+
+    try {
+      localStorage.setItem("montealto_theme", theme);
+    } catch (e) {}
+  }
+
+  function initTheme() {
+    let theme = "dark";
+    try {
+      const saved = localStorage.getItem("montealto_theme");
+      if (saved === "light" || saved === "dark") {
+        theme = saved;
+      } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
+        theme = "light";
+      }
+    } catch (e) {}
+    applyTheme(theme);
+  }
+
+  /* ===================== CONFIG BÁSICA ===================== */
+  const CONFIG = {
+    SHEETS_ENDPOINT:
+      "https://script.google.com/macros/s/AKfycbxrWQZfdFBOSo75tNlCjHXtad67DKMu5BzXOU7mapsZmVzQWC7td4Y7XpD96EdwxYGj/exec",
+
+    products: [
+      { id: "brat",    type: "chorizo", name: "Chorizo Bratwurst",    imageUrl: "Bratwurst.png" },
+      { id: "tex",     type: "chorizo", name: "Chorizo Tex-Mex",      imageUrl: "Tex-Mex.png" },
+      { id: "criollo", type: "chorizo", name: "Criollo argentino",    imageUrl: "Argentino.png" },
+      { id: "carib",   type: "chorizo", name: "Chorizo Caribeño",     imageUrl: "Caribeño.png" },
+      { id: "tico",    type: "chorizo", name: "Costarricense casero", imageUrl: "Criollo.png" },
+      { id: "bacon",   type: "bacon",   name: "Bacon ahumado",        imageUrl: "Tocineta.png" }
+    ],
+
+    weights: [
+      { id: "500",  grams: 500,  label: "½ kilo (500g)" },
+      { id: "1000", grams: 1000, label: "1 kilo (1000g)" }
+    ]
+  };
+
+  /* Precios por gramo (fallback) */
+  let pricePerGramChorizo = 8.5;
+  let pricePerGramBacon   = 11.0;
+
+  /* ===================== ESTADO ===================== */
+  let sessionId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  let cart = [];
+
+  const state = {
+    nombre: "",
+    telefono: "",
+    comentarios: "",
+    discountCode: "",
+    currentProductId: "",
+    currentWeightId: "",
+    currentQuantity: 1,
+    wantsPromos: false,
+    pointsChecked: false   // para controlar el botón Continuar
+  };
+
+  /* ===================== UTILIDADES ===================== */
+  function formatCRC(v) {
+    return "₡" + (v || 0).toLocaleString("es-CR");
+  }
+
+  function getSelectedProduct() {
+    return CONFIG.products.find(p => p.id === state.currentProductId) || null;
+  }
+
+  function getSelectedWeight() {
+    return CONFIG.weights.find(w => w.id === state.currentWeightId) || null;
+  }
+
+  function calculateLineTotal(product, grams, quantity) {
+    if (!product || !grams || !quantity) return 0;
+
+    const totalGrams = grams * quantity;
+    const perGram = product.type === "bacon" ? pricePerGramBacon : pricePerGramChorizo;
+
+    return Math.round(totalGrams * perGram);
+  }
+
+  function calculateSubtotal() {
+    const p = getSelectedProduct();
+    const w = getSelectedWeight();
+    if (!p || !w) return 0;
+    return calculateLineTotal(p, w.grams, state.currentQuantity);
+  }
+
+  function getNextSaturday(fromDate = new Date()) {
+    const d = new Date(fromDate);
+    const day = d.getDay();
+    const diff = (6 - day + 7) % 7;
+    d.setDate(d.getDate() + diff);
+    return d;
+  }
+
+  function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent || ""
+    );
+  }
+
+  /* ===================== AUDIO + VIBRACIÓN ===================== */
+  function playFeedback(type) {
+    var audioId = (type === "send") ? "sound-send" : "sound-add";
+    var audio = document.getElementById(audioId);
+    if (audio) {
+      try {
+        audio.currentTime = 0;
+        audio.play().catch(function(){});
+      } catch (e) {}
+    }
+    if (navigator.vibrate) {
+      navigator.vibrate(30);
+    }
+  }
+
+  /* ===================== CONFETTI ===================== */
+  function burstConfettiSmallFromElement(el) {
+    if (typeof confetti !== "function" || !el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (rect.left + rect.width / 2) / window.innerWidth;
+    const y = (rect.top + rect.height / 2) / window.innerHeight;
+    confetti({
+      particleCount: 25,
+      spread: 45,
+      startVelocity: 35,
+      scalar: 0.7,
+      origin: { x, y }
+    });
+  }
+
+  function burstConfettiBigCenter() {
+    if (typeof confetti !== "function") return;
+    confetti({
+      particleCount: 90,
+      spread: 70,
+      startVelocity: 40,
+      scalar: 1.1,
+      origin: { x: 0.5, y: 0.5 }
+    });
+  }
+
+  /* ===================== PUNTOS TELÉFONO ===================== */
+  async function fetchPointsForPhone(phone) {
+    const infoEl = document.getElementById("puntos-info");
+    const clean = (phone || "").trim();
+
+    if (clean.length < 8) {
+      infoEl.textContent = "";
+      infoEl.classList.remove("has-points", "no-points");
+      state.pointsChecked = false;
+      updateContinueButtonState();
+      return;
+    }
+
+    try {
+      const res = await fetch(CONFIG.SHEETS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: "getPoints",
+          telefono: clean
+        })
+      });
+
+      if (!res.ok) {
+        console.warn("Error HTTP getPoints:", res.status, res.statusText);
+        infoEl.textContent = "";
+        infoEl.classList.remove("has-points", "no-points");
+        state.pointsChecked = false;
+        updateContinueButtonState();
+        return;
+      }
+
+      const data = await res.json();
+
+      if (data.success) {
+        const pts = Number(data.points || 0);
+        if (pts > 0) {
+          infoEl.innerHTML = "🎉 <strong>Tenés " + pts + " puntos</strong> acumulados en Monte Alto 🧡";
+          infoEl.classList.add("has-points");
+          infoEl.classList.remove("no-points");
+        } else {
+          infoEl.innerHTML = "⭐ <strong>Empezás desde cero.</strong> Este número aún no tiene puntos acumulados.";
+          infoEl.classList.add("no-points");
+          infoEl.classList.remove("has-points");
+        }
+        state.pointsChecked = true;
+        updateContinueButtonState();
+      } else {
+        infoEl.textContent = "";
+        infoEl.classList.remove("has-points", "no-points");
+        state.pointsChecked = false;
+        updateContinueButtonState();
+      }
+    } catch (err) {
+      console.error("Error en fetchPointsForPhone:", err);
+      infoEl.textContent = "";
+      infoEl.classList.remove("has-points", "no-points");
+      state.pointsChecked = false;
+      updateContinueButtonState();
+    }
+  }
+
+  /* ===================== CONFIG: GET Z1–AC1 (solo precios) ===================== */
+  async function loadConfigFromSheet() {
+    try {
+      const res = await fetch(CONFIG.SHEETS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "getConfig" })
+      });
+
+      if (!res.ok) {
+        console.warn("Error HTTP getConfig:", res.status, res.statusText);
+        return;
+      }
+
+      const data = await res.json();
+      console.log("Config recibida de Sheets:", data);
+
+      if (data.success) {
+        const aa = Number(data.AA1);
+        const ac = Number(data.AC1);
+
+        if (!isNaN(aa) && aa > 0) {
+          pricePerGramChorizo = aa;
+        }
+        if (!isNaN(ac) && ac > 0) {
+          pricePerGramBacon = ac;
+        }
+      } else {
+        console.warn("getConfig sin éxito:", data.message);
+      }
+    } catch (err) {
+      console.error("Error en loadConfigFromSheet:", err);
+    }
+  }
+
+  /* ===================== CARRITO ===================== */
+  function openCartDrawer() {
+    if (cart.length === 0) {
+      alert("Tu carrito está vacío.");
+      return;
+    }
+    document.getElementById("cart-drawer").classList.add("open");
+    document.getElementById("cart-backdrop").style.display = "block";
+  }
+
+  function closeCartDrawer() {
+    document.getElementById("cart-drawer").classList.remove("open");
+    document.getElementById("cart-backdrop").style.display = "none";
+  }
+
+  function updateCartUI() {
+    const countEl = document.getElementById("cart-count");
+    const bodyEl  = document.getElementById("cart-drawer-body");
+    const totalEl = document.getElementById("cart-drawer-total");
+
+    countEl.textContent = cart.length.toString();
+    bodyEl.innerHTML = "";
+
+    if (cart.length === 0) {
+      bodyEl.innerHTML = '<p class="muted">Tu carrito está vacío.</p>';
+      totalEl.textContent = "₡0";
+      return;
+    }
+
+    cart.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "cart-item-row";
+      div.innerHTML =
+        "<div><strong>" + item.quantity + " x " + item.productName + "</strong></div>" +
+        '<div class="muted">' + item.packLabel + "</div>" +
+        "<div>" + formatCRC(item.lineTotal) + "</div>";
+      bodyEl.appendChild(div);
+    });
+
+    const total = cart.reduce((s, c) => s + c.lineTotal, 0);
+    totalEl.textContent = formatCRC(total);
+  }
+
+  /* ===================== SEND ORDER ===================== */
+  async function sendOrder() {
+    const statusEl = document.getElementById("status");
+    const btnNuevo = document.getElementById("btn-nuevo-pedido");
+    statusEl.classList.remove("status-box-success");
+    btnNuevo.style.display = "none";
+
+    const nombreSeguro = ((state && state.nombre) || "").trim() || "cliente";
+
+    try {
+      if (!Array.isArray(cart) || cart.length === 0) {
+        statusEl.textContent = "Agregá al menos un producto al carrito antes de confirmar.";
+        return;
+      }
+
+      statusEl.textContent = "Enviando tu pedido, " + nombreSeguro + "...";
+      playFeedback("send");
+
+      // Total bruto (antes de cualquier descuento) – base para puntos
+      const totalBrutoColones = cart.reduce(
+        (suma, item) => suma + Number(item.lineTotal || 0),
+        0
+      );
+
+      // Por ahora el total cobrado es igual al bruto (cuando tengas lógica
+      // de descuentos, aquí se ajusta totalColones, pero NO totalBrutoColones).
+      let totalColones = totalBrutoColones;
+
+      const cartLines = cart
+        .map(item => {
+          const qty = item.quantity || 0;
+          const name = item.productName || "Producto";
+          const pack = item.packLabel || "";
+          const lineTotal = Number(item.lineTotal || 0);
+          return qty + " x " + name + " (" + pack + ") – " + formatCRC(lineTotal);
+        })
+        .join("\n");
+
+      const presentacionResumen = cart
+        .map(item => (item.quantity || 0) + " x " + (item.packLabel || ""))
+        .join(", ");
+
+      const pesoTotalGramos = cart.reduce(
+        (suma, item) => suma + (Number(item.grams || 0) * Number(item.quantity || 0)),
+        0
+      );
+
+      const primerProducto = (cart[0] && cart[0].productName) || "Calculadora Monte Alto";
+
+      let comentariosBase = (state && state.comentarios) || "";
+      if (state.discountCode) {
+        comentariosBase += "\nCódigo de descuento: " + state.discountCode;
+      }
+      comentariosBase += "\nMétodo de pago: SINPE móvil BAC";
+
+      const comentariosFinal = comentariosBase + "\n" + cartLines;
+
+      const payload = {
+        action: "saveOrder",
+        sessionId: sessionId,
+        nombre: state.nombre || "",
+        telefono: state.telefono || "",
+        comentarios: comentariosFinal,
+        cantidad: cart.length,
+        totalColones: totalColones,           // total cobrado (con descuento en el futuro)
+        totalBrutoColones: totalBrutoColones, // base para puntos
+        puntos: 0,
+        productoId: primerProducto,
+        presentacionResumen: presentacionResumen,
+        pesoTotalGramos: pesoTotalGramos,
+        discountCode: state.discountCode || "",
+        promoAccepted: state.wantsPromos ? "Si" : ""
+      };
+
+      const res = await fetch(CONFIG.SHEETS_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        statusEl.textContent =
+          "Error enviando el pedido (HTTP " + res.status + ": " + res.statusText + "). Verificá la URL del Apps Script.";
+        return;
+      }
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        statusEl.textContent = "No se pudo interpretar la respuesta del servidor.";
+        return;
+      }
+
+      if (!data.success) {
+        statusEl.textContent =
+          (data.message ? data.message : "No se pudo guardar el pedido en la hoja.");
+        return;
+      }
+
+      const orderId = data.orderId || "";
+      const puntosPedido = Number(data.points || data.pointsThisOrder || 0);
+      const totalPointsAfter = Number(data.totalPointsAfter || 0);
+
+      burstConfettiBigCenter();
+
+      const resumenHtml = cart
+        .map(item =>
+          (item.quantity || 0) + " x " + item.productName +
+          " (" + item.packLabel + ") – " + formatCRC(item.lineTotal)
+        )
+        .join("<br>");
+
+      // ==== FECHAS: CHORIZO VS BACON ====
+      function formatDate(d) {
+        return d.toLocaleDateString("es-CR", {
+          weekday: "long",
+          day: "numeric",
+          month: "long"
+        });
+      }
+
+      const contieneBacon = cart.some(i => i.productId === "bacon");
+
+      const fechaChorizos = getNextSaturday(new Date());
+      const fechaChorizosStr = formatDate(fechaChorizos);
+
+      let fechaBacon = new Date();
+      fechaBacon.setDate(fechaBacon.getDate() + 10);
+      const fechaBaconStr = formatDate(fechaBacon);
+
+      let textoFechas = "";
+      if (contieneBacon && cart.length > 1) {
+        textoFechas =
+          "<strong>Fechas de entrega:</strong><br>" +
+          "• Chorizos: " + fechaChorizosStr + "<br>" +
+          "• Bacon: " + fechaBaconStr + "<br>" +
+          "<em>El bacon requiere un proceso mínimo de 10 días.</em>";
+      } else if (contieneBacon) {
+        textoFechas =
+          "<strong>Fecha estimada de entrega:</strong> " +
+          fechaBaconStr +
+          "<br><em>El bacon requiere un proceso mínimo de 10 días.</em>";
+      } else {
+        textoFechas =
+          "<strong>Fecha estimada de entrega:</strong> " + fechaChorizosStr;
+      }
+      // ==== FIN FECHAS ====
+
+      let extraLoyalty = "";
+      if (!isNaN(puntosPedido) && !isNaN(totalPointsAfter)) {
+        extraLoyalty =
+          "<br><br><strong>Puntos de fidelidad:</strong><br>" +
+          "Este pedido te da " + puntosPedido + " puntos.<br>" +
+          "Con este pedido llegarás a " + totalPointsAfter + " puntos acumulados.";
+      }
+
+      let orderLine = "";
+      if (orderId) {
+        orderLine = "<br><strong>Número de orden:</strong> " + orderId;
+      }
+
+      const sinpeHtml =
+        "<br><br><strong>Pago por SINPE móvil (BAC):</strong><br>" +
+        "Enviá el monto total al número <strong>6066-8322</strong> (Marianela Esquivel).<br>" +
+        "En el detalle indicá tu orden #" + (orderId || "(pendiente)") + ".";
+
+      statusEl.innerHTML =
+        "¡Gracias por tu compra, " + nombreSeguro + "! 🧡<br><br>" +
+        "<strong>Resumen de tu pedido:</strong><br>" +
+        resumenHtml + "<br><br>" +
+        "<strong>Total:</strong> " + formatCRC(totalColones) + "<br>" +
+        textoFechas +
+        orderLine +
+        extraLoyalty +
+        sinpeHtml;
+
+      statusEl.classList.add("status-box-success");
+      btnNuevo.style.display = "inline-block";
+
+      document.getElementById("label-descuento").style.display = "none";
+      document.getElementById("discount-code").style.display = "none";
+      document.getElementById("sinpe-box").style.display = "none";
+      document.getElementById("chk-promos").disabled = true;
+      const promoBox = document.querySelector(".promo-box");
+      if (promoBox) promoBox.style.display = "none";
+      document.getElementById("btn-volver-productos").style.display = "none";
+      document.getElementById("btn-confirmar").style.display = "none";
+
+      // ===== MENSAJE WHATSAPP A 6022-8322 =====
+      const waLines = [];
+      waLines.push("Hola, soy " + nombreSeguro + ".");
+      waLines.push("Quiero confirmar mi pedido en Monte Alto.");
+      waLines.push("");
+      if (orderId) {
+        waLines.push("Orden #" + orderId);
+      }
+      waLines.push("Detalle:");
+      waLines.push(cartLines);
+      waLines.push("");
+      waLines.push("Total: " + formatCRC(totalColones));
+
+      // Fechas de entrega (mismo criterio que en la pantalla)
+      waLines.push("");
+      if (contieneBacon && cart.length > 1) {
+        waLines.push("Fechas de entrega:");
+        waLines.push("• Chorizos: " + fechaChorizosStr);
+        waLines.push("• Bacon: " + fechaBaconStr + " (el bacon requiere un proceso mínimo de 10 días).");
+      } else if (contieneBacon) {
+        waLines.push("Fecha estimada de entrega: " + fechaBaconStr + " (el bacon requiere un proceso mínimo de 10 días).");
+      } else {
+        waLines.push("Fecha estimada de entrega: " + fechaChorizosStr);
+      }
+
+      // Puntos
+      if (!isNaN(puntosPedido)) {
+        waLines.push("");
+        waLines.push("Puntos de fidelidad:");
+        waLines.push("Este pedido me da " + puntosPedido + " puntos.");
+      }
+      if (!isNaN(totalPointsAfter)) {
+        waLines.push("Con este pedido llegaré a " + totalPointsAfter + " puntos acumulados.");
+      }
+
+      // Datos de SINPE
+      waLines.push("");
+      waLines.push("Pago por SINPE móvil (BAC):");
+      waLines.push("Envío el monto total al número 6066-8322 (Marianela Esquivel).");
+      if (orderId) {
+        waLines.push("En el detalle indico mi orden #" + orderId + ".");
+      }
+
+      const waMessage = waLines.join("\n");
+
+      if (isMobileDevice()) {
+        const waUrl =
+          "https://wa.me/50660228322?text=" + encodeURIComponent(waMessage);
+        window.location.href = waUrl;
+      }
+      // ============================================
+
+      cart = [];
+      updateCartUI();
+
+    } catch (err) {
+      console.error("Error en sendOrder():", err);
+      statusEl.textContent =
+        "Hubo un problema enviando tu pedido.\nDetalle técnico: " +
+        (err && err.message ? err.message : String(err));
+    }
+  }
+
+  /* ===================== RESET ===================== */
+  function resetForNewOrder() {
+    sessionId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+    state.nombre = "";
+    state.telefono = "";
+    state.comentarios = "";
+    state.discountCode = "";
+    state.currentProductId = "";
+    state.currentWeightId = "";
+    state.currentQuantity = 1;
+    state.wantsPromos = false;
+    state.pointsChecked = false;
+
+    cart = [];
+    updateCartUI();
+
+    document.getElementById("nombre").value = "";
+    document.getElementById("telefono").value = "";
+    document.getElementById("comentarios").value = "";
+    document.getElementById("discount-code").value = "";
+    document.getElementById("datos-error").textContent = "";
+    document.getElementById("puntos-info").textContent = "";
+    document.getElementById("puntos-info").classList.remove("has-points", "no-points");
+    document.getElementById("subtotal-linea").textContent = "₡0";
+    document.getElementById("producto").value = "";
+    document.getElementById("peso").value = "";
+    document.getElementById("cantidad").value = 1;
+    document.getElementById("product-image-wrapper").style.display = "none";
+
+    const statusEl = document.getElementById("status");
+    statusEl.textContent = "";
+    statusEl.classList.remove("status-box-success");
+    document.getElementById("btn-nuevo-pedido").style.display = "none";
+
+    document.getElementById("chk-promos").checked = false;
+    document.getElementById("chk-promos").disabled = false;
+    const promoBox = document.querySelector(".promo-box");
+    if (promoBox) promoBox.style.display = "";
+
+    document.getElementById("step-datos").classList.add("active");
+    document.getElementById("step-producto").classList.remove("active");
+    document.getElementById("step-cliente").classList.remove("active");
+
+    document.getElementById("label-descuento").style.display = "";
+    document.getElementById("discount-code").style.display = "";
+    document.getElementById("sinpe-box").style.display = "";
+    document.getElementById("btn-volver-productos").style.display = "";
+    document.getElementById("btn-confirmar").style.display = "";
+
+    updateContinueButtonState();
+  }
+
+  /* ===================== RESUMEN FINAL (ya no se usa caja aparte) ===================== */
+  function updateResumenFinal() {
+    // Intencionalmente vacío: eliminamos el div resumen-final
+  }
+
+  /* ===================== BOTÓN CONTINUAR ===================== */
+  function updateContinueButtonState() {
+    const btn = document.getElementById("btn-ir-productos");
+    const nombreInput = document.getElementById("nombre");
+    const telInput = document.getElementById("telefono");
+
+    const n = (nombreInput.value || "").trim();
+    const t = (telInput.value || "").replace(/\D/g, "").trim();
+
+    const can =
+      n.length > 0 &&
+      t.length >= 8 &&
+      state.pointsChecked === true;
+
+    btn.disabled = !can;
+  }
+
+  /* ===================== SETUP ===================== */
+  function setup() {
+    const productoSelect = document.getElementById("producto");
+    const pesoSelect = document.getElementById("peso");
+    const telInput = document.getElementById("telefono");
+    const nombreInput = document.getElementById("nombre");
+    const discountInput = document.getElementById("discount-code");
+    const chkPromos = document.getElementById("chk-promos");
+    const btnNuevo = document.getElementById("btn-nuevo-pedido");
+
+    // Tema
+    initTheme();
+    const btnThemeDark = document.getElementById("btn-theme-dark");
+    const btnThemeLight = document.getElementById("btn-theme-light");
+    if (btnThemeDark && btnThemeLight) {
+      btnThemeDark.addEventListener("click", () => applyTheme("dark"));
+      btnThemeLight.addEventListener("click", () => applyTheme("light"));
+    }
+
+    CONFIG.products.forEach(p => {
+      const o = document.createElement("option");
+      o.value = p.id;
+      o.textContent = p.name;
+      productoSelect.appendChild(o);
+    });
+
+    CONFIG.weights.forEach(w => {
+      const o = document.createElement("option");
+      o.value = w.id;
+      o.textContent = w.label;
+      pesoSelect.appendChild(o);
+    });
+
+    let lastPointsPhone = "";
+    telInput.addEventListener("input", () => {
+      const raw   = telInput.value || "";
+      const clean = raw.replace(/\D/g, "").trim();
+      if (clean.length >= 8 && clean !== lastPointsPhone) {
+        lastPointsPhone = clean;
+        fetchPointsForPhone(clean);
+      } else if (clean.length < 8) {
+        const infoEl = document.getElementById("puntos-info");
+        infoEl.textContent = "";
+        infoEl.classList.remove("has-points", "no-points");
+        lastPointsPhone = "";
+        state.pointsChecked = false;
+        updateContinueButtonState();
+      }
+    });
+
+    nombreInput.addEventListener("input", () => {
+      updateContinueButtonState();
+    });
+
+    discountInput.addEventListener("input", () => {
+      discountInput.value = discountInput.value.toUpperCase();
+    });
+
+    chkPromos.addEventListener("change", () => {
+      state.wantsPromos = chkPromos.checked;
+    });
+
+    document.getElementById("btn-ir-productos").onclick = () => {
+      const n = nombreInput.value.trim();
+      const t = telInput.value.trim();
+      const err = document.getElementById("datos-error");
+      if (!n) {
+        err.textContent = "Ingresá tu nombre.";
+        return;
+      }
+      if (!t || t.replace(/\D/g, "").length < 8) {
+        err.textContent = "Teléfono inválido.";
+        return;
+      }
+      if (!state.pointsChecked) {
+        err.textContent = "Esperá un momento mientras revisamos tus puntos.";
+        return;
+      }
+      err.textContent = "";
+      state.nombre = n;
+      state.telefono = t;
+      document.getElementById("step-datos").classList.remove("active");
+      document.getElementById("step-producto").classList.add("active");
+    };
+
+    productoSelect.onchange = () => {
+      state.currentProductId = productoSelect.value;
+      const p = getSelectedProduct();
+      const imgWrap = document.getElementById("product-image-wrapper");
+      const img = document.getElementById("product-image");
+      const caption = document.getElementById("product-image-caption");
+      if (p) {
+        img.src = p.imageUrl;
+        caption.textContent = p.name;
+        imgWrap.style.display = "block";
+      } else {
+        imgWrap.style.display = "none";
+        img.src = "";
+      }
+      document.getElementById("subtotal-linea").textContent =
+        formatCRC(calculateSubtotal());
+    };
+
+    pesoSelect.onchange = () => {
+      state.currentWeightId = pesoSelect.value;
+      document.getElementById("subtotal-linea").textContent =
+        formatCRC(calculateSubtotal());
+    };
+
+    document.getElementById("cantidad").oninput = () => {
+      state.currentQuantity =
+        Number(document.getElementById("cantidad").value) || 1;
+      document.getElementById("subtotal-linea").textContent =
+        formatCRC(calculateSubtotal());
+    };
+
+    const btnAgregar = document.getElementById("btn-agregar-carrito");
+    btnAgregar.onclick = () => {
+      const p = getSelectedProduct();
+      const w = getSelectedWeight();
+      if (!p || !w) {
+        alert("Revisá que escogiste el chorizo/tocineta y el peso.");
+        return;
+      }
+      state.comentarios = document.getElementById("comentarios").value.trim();
+      const qty = state.currentQuantity;
+      const lineTotal = calculateLineTotal(p, w.grams, qty);
+      cart.push({
+        productId: p.id,
+        productName: p.name,
+        packLabel: w.label,
+        grams: w.grams,
+        quantity: qty,
+        lineTotal: lineTotal
+      });
+      updateCartUI();
+      burstConfettiSmallFromElement(btnAgregar);
+      playFeedback("add");
+      state.currentProductId = "";
+      state.currentWeightId = "";
+      state.currentQuantity = 1;
+      document.getElementById("producto").value = "";
+      document.getElementById("peso").value = "";
+      document.getElementById("cantidad").value = 1;
+      document.getElementById("product-image-wrapper").style.display = "none";
+      document.getElementById("subtotal-linea").textContent = "₡0";
+      // Notas se mantienen, por si el cliente quiere la misma instrucción en varias líneas
+    };
+
+    document.getElementById("btn-comprar-ya").onclick = () => {
+      if (cart.length === 0) {
+        alert("Agregá algo al carrito.");
+        return;
+      }
+      state.comentarios = document.getElementById("comentarios").value.trim();
+      document.getElementById("step-producto").classList.remove("active");
+      document.getElementById("step-cliente").classList.add("active");
+      updateResumenFinal(); // ahora no hace nada visible
+    };
+
+    document.getElementById("btn-volver-productos").onclick = () => {
+      document.getElementById("step-cliente").classList.remove("active");
+      document.getElementById("step-producto").classList.add("active");
+    };
+
+    document.getElementById("btn-confirmar").onclick = () => {
+      state.discountCode =
+        document.getElementById("discount-code").value.trim().toUpperCase();
+      sendOrder();
+    };
+
+    btnNuevo.onclick = resetForNewOrder;
+
+    document.getElementById("cart-icon").onclick = openCartDrawer;
+    document.getElementById("cart-backdrop").onclick = closeCartDrawer;
+    document.getElementById("btn-cart-close").onclick = closeCartDrawer;
+
+    document.getElementById("btn-go-confirm").onclick = () => {
+      if (cart.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+      closeCartDrawer();
+      document.getElementById("step-producto").classList.remove("active");
+      document.getElementById("step-cliente").classList.add("active");
+      updateResumenFinal();
+    };
+
+    updateCartUI();
+    updateContinueButtonState();
+    loadConfigFromSheet();
+  }
+
+  window.onload = () => setup();
+  </script>
+
+</body>
+</html>
