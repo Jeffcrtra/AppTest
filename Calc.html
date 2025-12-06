@@ -2,23 +2,50 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>4:01 Monte Alto – Calculadora</title>
+  <title>4:10 Monte Alto – Calculadora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     :root {
+      /* PALETA CLARA (si el usuario cambia a modo claro) */
       --bg-main: #f5f0e8;
+      --bg-card: rgba(255, 254, 250, 0.96);
       --bg-dark: #141417;
-      --accent: #f4ff3b;
-      --accent-soft: #ffe089;
+
+      --accent: #4caf50;
+      --accent-hover: #66bb6a;
+
       --text-main: #1b1b1f;
       --text-muted: #77757f;
+
       --pill-bg: #fff7e3;
       --danger: #ff4b4b;
+
       --radius-xl: 28px;
       --radius-lg: 20px;
+
       --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.16);
-      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Roboto", sans-serif;
+
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Roboto", sans-serif;
+    }
+
+    /* OVERRIDES PARA MODO OSCURO (DEFAULT) CON AZULES + VERDE MONTE ALTO */
+    body.dark {
+      --bg-main: #0a1a2a;          /* fondo general */
+      --bg-card: #17202a;          /* tarjetas */
+      --bg-dark: #0f1419;          /* zonas profundas */
+
+      --accent: #4caf50;           /* verde Monte Alto */
+      --accent-hover: #66bb6a;
+
+      --text-main: #f2f2f2;
+      --text-muted: #a0aec0;
+
+      --pill-bg: #1d3557;
+      --danger: #ff7676;
+
+      --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.6);
     }
 
     * {
@@ -29,17 +56,12 @@
 
     body {
       font-family: var(--font-main);
-      background: radial-gradient(circle at top, #fdf9f0 0, #e6decf 55%, #d4ccb9 100%);
+      background: var(--bg-main);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: stretch;
       color: var(--text-main);
-    }
-
-    body.dark {
-      background: radial-gradient(circle at top, #222 0, #111 50%, #000 100%);
-      color: #f6f5ff;
     }
 
     .app {
@@ -64,24 +86,19 @@
     }
 
     .card {
-      background: rgba(255, 254, 250, 0.96);
+      background: var(--bg-card);
       border-radius: var(--radius-xl);
       padding: 16px 18px 18px;
       box-shadow: var(--shadow-soft);
       position: relative;
     }
 
-    body.dark .card {
-      background: #18181f;
-      color: #f6f5ff;
+    .hero {
+      /* nada extra */
     }
 
-    .card.hero {
-      flex: 1.2;
-    }
-
-    .card.form-cart {
-      flex: 1;
+    .form-cart {
+      /* nada extra */
     }
 
     header.app-header {
@@ -110,10 +127,6 @@
       color: var(--text-muted);
     }
 
-    body.dark .brand-sub {
-      color: #aaa7c5;
-    }
-
     .mode-toggle {
       display: inline-flex;
       align-items: center;
@@ -126,14 +139,14 @@
     }
 
     body.dark .mode-toggle {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.08);
     }
 
     .mode-toggle span.icon {
       width: 20px;
       height: 20px;
       border-radius: 999px;
-      background: #fff;
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -142,8 +155,8 @@
     }
 
     body.dark .mode-toggle span.icon {
-      background: #111;
-      color: #f4ff3b;
+      background: #0a1a2a;
+      color: var(--accent);
     }
 
     h1 {
@@ -164,10 +177,6 @@
       font-size: 13px;
       color: var(--text-muted);
       margin-bottom: 12px;
-    }
-
-    body.dark .hero-subline {
-      color: #aaa7c5;
     }
 
     .hero-layout {
@@ -193,22 +202,22 @@
       width: 260px;
       height: 170px;
       border-radius: 999px;
-      background: radial-gradient(circle at top, #f6e1c8 0, #d9a66b 60%, #b6793e 100%);
+      background: radial-gradient(circle at top, #2c3e50 0, #1b263b 60%, #111827 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.65);
       overflow: hidden;
+    }
+
+    body:not(.dark) .hero-plate {
+      background: radial-gradient(circle at top, #f6e1c8 0, #d9a66b 60%, #b6793e 100%);
     }
 
     .hero-plate img {
       width: 115%;
       height: auto;
       object-fit: cover;
-    }
-
-    body.dark .hero-plate {
-      background: radial-gradient(circle at top, #464049 0, #2f2530 60%, #1a1219 100%);
     }
 
     .hero-tag {
@@ -220,20 +229,20 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #6a4a1e;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+      color: #fefefe;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
     }
 
-    body.dark .hero-tag {
-      background: rgba(0,0,0,0.75);
-      color: #ffe7b7;
+    body:not(.dark) .hero-tag {
+      color: #6a4a1e;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
     }
 
     .hero-tag span.icon {
       width: 16px;
       height: 16px;
       border-radius: 999px;
-      background: #ffcf6f;
+      background: #4caf50;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -257,20 +266,16 @@
     .hero-price-line {
       font-size: 14px;
       font-weight: 600;
-      color: #d88d17;
+      color: #ffca28;
     }
 
-    body.dark .hero-price-line {
-      color: #ffd46a;
+    body:not(.dark) .hero-price-line {
+      color: #d88d17;
     }
 
     .hero-tagline {
       font-size: 13px;
-      color: #4e4b54;
-    }
-
-    body.dark .hero-tagline {
-      color: #cbc4de;
+      color: var(--text-muted);
     }
 
     .hero-meta-row {
@@ -281,18 +286,16 @@
       color: var(--text-muted);
     }
 
-    body.dark .hero-meta-row {
-      color: #a29dc0;
-    }
-
     .pill {
       padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(0,0,0,0.05);
+      background: rgba(0,0,0,0.14);
+      color: #e0e6ed;
     }
 
-    body.dark .pill {
-      background: rgba(255,255,255,0.08);
+    body:not(.dark) .pill {
+      background: rgba(0,0,0,0.05);
+      color: #4e4b54;
     }
 
     .stock-warning {
@@ -325,11 +328,21 @@
     textarea {
       padding: 7px 9px;
       border-radius: 10px;
-      border: 1px solid #ddd2c3;
+      border: 1px solid #34495e;
       font-size: 13px;
       font-family: var(--font-main);
       outline: none;
+      background: #0f1419;
+      color: #f2f2f2;
+    }
+
+    body:not(.dark) input[type="text"],
+    body:not(.dark) input[type="number"],
+    body:not(.dark) select,
+    body:not(.dark) textarea {
       background: #fffdf8;
+      border-color: #ddd2c3;
+      color: #1b1b1f;
     }
 
     textarea {
@@ -337,22 +350,9 @@
       resize: vertical;
     }
 
-    body.dark input[type="text"],
-    body.dark input[type="number"],
-    body.dark select,
-    body.dark textarea {
-      background: #131319;
-      border-color: #343440;
-      color: #f6f5ff;
-    }
-
     small.helper {
       font-size: 11px;
       color: var(--text-muted);
-    }
-
-    body.dark small.helper {
-      color: #a29dc0;
     }
 
     .inline-row {
@@ -368,15 +368,15 @@
       font-size: 12px;
       padding: 6px 8px;
       border-radius: 10px;
-      background: rgba(255, 247, 220, 0.9);
-      color: #5c4713;
+      background: #1b2838;
+      color: #e3f2fd;
       margin-bottom: 8px;
       display: none;
     }
 
-    body.dark .points-banner {
-      background: rgba(41, 33, 85, 0.9);
-      color: #ffe7a0;
+    body:not(.dark) .points-banner {
+      background: rgba(255, 247, 220, 0.9);
+      color: #5c4713;
     }
 
     .points-banner strong {
@@ -388,14 +388,14 @@
       margin-bottom: 8px;
       padding: 6px 8px;
       border-radius: 10px;
-      background: #fff3cd;
-      color: #856404;
+      background: #1b2838;
+      color: #e3f2fd;
       font-size: 12px;
     }
 
-    body.dark .last-order-banner {
-      background: #3f3420;
-      color: #ffe7a0;
+    body:not(.dark) .last-order-banner {
+      background: #fff3cd;
+      color: #856404;
     }
 
     .last-order-banner button {
@@ -403,14 +403,10 @@
       padding: 4px 8px;
       border-radius: 999px;
       border: none;
-      background: #ffc107;
+      background: var(--accent);
       cursor: pointer;
       font-size: 11px;
-    }
-
-    body.dark .last-order-banner button {
-      background: #ffd75b;
-      color: #222;
+      color: #0a1a2a;
     }
 
     .btn {
@@ -427,27 +423,36 @@
 
     .btn-primary {
       background: var(--accent);
-      color: #111;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.25);
+      color: #0a1a2a;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      width: 100%;
+      justify-content: center;
+      padding: 12px 16px;
+      font-size: 15px;
+      transition: background 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
     }
 
     .btn-secondary {
-      background: #fff;
-      color: #333;
-      border: 1px solid #ddd;
+      background: #1b2838;
+      color: #e0e6ed;
+      border: 1px solid #34495e;
     }
 
-    body.dark .btn-secondary {
-      background: #191924;
-      color: #eee;
-      border-color: #44435a;
+    body:not(.dark) .btn-secondary {
+      background: #ffffff;
+      color: #333;
+      border-color: #ddd;
     }
 
     .btn span.icon {
       width: 22px;
       height: 22px;
       border-radius: 999px;
-      background: #111;
+      background: #0a1a2a;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -455,7 +460,7 @@
       font-size: 14px;
     }
 
-    .btn-primary span.icon {
+    body:not(.dark) .btn span.icon {
       background: #111;
     }
 
@@ -468,12 +473,12 @@
       margin-top: 6px;
       border-radius: 16px;
       overflow: hidden;
-      border: 1px solid rgba(0,0,0,0.06);
+      border: 1px solid #2c3e50;
       font-size: 12px;
     }
 
-    body.dark .cart-table {
-      border-color: #343440;
+    body:not(.dark) .cart-table {
+      border-color: rgba(0,0,0,0.06);
     }
 
     .cart-table table {
@@ -484,31 +489,27 @@
     .cart-table th,
     .cart-table td {
       padding: 6px 8px;
-      border-bottom: 1px solid rgba(0,0,0,0.04);
+      border-bottom: 1px solid #1b2838;
     }
 
-    body.dark .cart-table th,
-    body.dark .cart-table td {
-      border-bottom-color: #262638;
+    body:not(.dark) .cart-table th,
+    body:not(.dark) .cart-table td {
+      border-bottom-color: rgba(0,0,0,0.04);
     }
 
     .cart-table th {
-      background: rgba(0,0,0,0.03);
+      background: #1b2838;
       text-align: left;
     }
 
-    body.dark .cart-table th {
-      background: #191924;
+    body:not(.dark) .cart-table th {
+      background: rgba(0,0,0,0.03);
     }
 
     .cart-empty {
       font-size: 12px;
       color: var(--text-muted);
       padding: 6px 0;
-    }
-
-    body.dark .cart-empty {
-      color: #a29dc0;
     }
 
     .totals-row {
@@ -528,22 +529,14 @@
       color: var(--text-muted);
     }
 
-    body.dark .totals-sub {
-      color: #a29dc0;
-    }
-
     .footer-note {
       font-size: 11px;
       margin-top: 4px;
       color: var(--text-muted);
     }
-
-    body.dark .footer-note {
-      color: #a29dc0;
-    }
   </style>
 </head>
-<body>
+<body class="dark">
 <div class="app">
 
   <div class="card hero">
@@ -553,8 +546,8 @@
         <div class="brand-sub">Charcutería artesanal</div>
       </div>
       <div class="mode-toggle" id="modeToggle">
-        <span class="icon" id="modeIcon">☀</span>
-        <span id="modeLabel">Modo claro</span>
+        <span class="icon" id="modeIcon">🌙</span>
+        <span id="modeLabel">Modo oscuro</span>
       </div>
     </header>
 
@@ -569,7 +562,7 @@
       <div class="hero-image-wrap">
         <div class="hero-plate">
           <img id="heroImage"
-               src="https://via.placeholder.com/480x320?text=Monte+Alto"
+               src="TexMex.png"
                alt="Producto Monte Alto">
         </div>
 
@@ -606,7 +599,7 @@
   </div>
 
   <div class="top-row">
-    <!-- Formulario -->
+    <!-- Formulario + carrito -->
     <div class="card form-cart">
       <div class="form-section-title">Datos del cliente</div>
 
@@ -638,7 +631,7 @@
         </button>
       </div>
 
-      <hr style="border:none; border-top:1px solid rgba(0,0,0,0.06); margin:10px 0;">
+      <hr style="border:none; border-top:1px solid #1b2838; margin:10px 0;">
 
       <div class="form-section-title">Pedido</div>
 
@@ -718,7 +711,7 @@
       </div>
 
       <div class="footer-note">
-        Años de sabor artesanal, ahora con calculadora. Tus puntos no se pierden aunque apliquemos descuentos.
+        Tus descuentos NO reducen los puntos que ganás. Tus puntos siempre se calculan con el total original.
       </div>
     </div>
   </div>
@@ -727,12 +720,11 @@
 
 <script>
   // =============================
-  // CONFIGURACIÓN DE PRODUCTOS
+  // CONFIGURACIÓN
   // =============================
+  const APPS_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5o0Eh7wkHE-idcreykcD7n4cTIn0OoXriF5219WOQVveAMAKJQEKZ/exec";
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5o0Eh7wkHE-idcreykcD7n4cTIn0OoXriF5219WOQVveAMAKJQEKZ/exec";
-
-  
   const CONFIG = {
     colonesPorPunto: 100,
     productos: {
@@ -744,7 +736,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
         stockPaquetesHoy: 6,
         upsellSugeridoId: "criollo",
         rinde: "Rinde aprox. 3–4 porciones",
-        imagen: "Tex-Mex.png",
+        imagen: "TexMex.png",
         picanteNivel: "Picante medio"
       },
       caribeno: {
@@ -755,7 +747,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
         stockPaquetesHoy: 5,
         upsellSugeridoId: null,
         rinde: "Ideal para 3–4 platos",
-        imagen: "Caribeño.png",
+        imagen: "Caribeno.png",
         picanteNivel: "Suave y aromático"
       },
       criollo: {
@@ -766,7 +758,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
         stockPaquetesHoy: 4,
         upsellSugeridoId: null,
         rinde: "Perfecto para la parrilla",
-        imagen: "Criollo.png",
+        imagen: "Argentino.png",
         picanteNivel: "Clásico, no picante"
       },
       bratwurst: {
@@ -788,19 +780,19 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
         stockPaquetesHoy: 5,
         upsellSugeridoId: null,
         rinde: "Acompaña 3–4 recetas",
-        imagen: "Tocineta.png",
+        imagen: "Bacon.png",
         picanteNivel: "No picante"
       },
       comboSurtido: {
         id: "comboSurtido",
         nombre: "Combo surtido (500 g de cada chorizo)",
         precioKg: 0,
-        precioFijo: 21000, // AJUSTA a tu realidad
+        precioFijo: 21000, // AJUSTAR A TU REALIDAD
         tagline: "Pack degustación con 500 g de cada chorizo Monte Alto.",
         stockPaquetesHoy: 3,
         upsellSugeridoId: null,
         rinde: "2.5 kg totales (5 sabores)",
-        imagen: "https://via.placeholder.com/480x320?text=Combo+Surtido",
+        imagen: "Combo.png",
         picanteNivel: "Degustación completa",
         esCombo: true
       }
@@ -837,7 +829,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
   }
 
   // =============================
-  // UI INICIAL
+  // REFERENCIAS DOM
   // =============================
   const productoSelect = document.getElementById("productoSelect");
   const picanteSelect = document.getElementById("picanteSelect");
@@ -848,9 +840,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
   const productTaglineEl = document.getElementById("productTagline");
   const heroYieldEl = document.getElementById("heroYield");
   const heroBaseGramEl = document.getElementById("heroBaseGram");
-  const stockWarningEl = document.getElementById("stockWarning");
   const heroTagLeft = document.getElementById("heroTagLeft");
   const heroTagRight = document.getElementById("heroTagRight");
+  const stockWarningEl = document.getElementById("stockWarning");
   const totalDisplay = document.getElementById("totalDisplay");
   const pointsDisplay = document.getElementById("pointsDisplay");
   const cartEmptyMsg = document.getElementById("cartEmptyMsg");
@@ -860,7 +852,12 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
   const pointsBannerText = document.getElementById("pointsBannerText");
   const lastOrderBanner = document.getElementById("lastOrderBanner");
   const lastOrderText = document.getElementById("lastOrderText");
+  const telefonoInput = document.getElementById("telefonoInput");
+  const nombreInput = document.getElementById("nombreInput");
 
+  // =============================
+  // PRODUCTOS
+  // =============================
   function initProductos() {
     productoSelect.innerHTML = "";
     Object.values(CONFIG.productos).forEach(prod => {
@@ -869,7 +866,6 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
       opt.textContent = prod.nombre;
       productoSelect.appendChild(opt);
     });
-    // default
     productoSelect.value = "texmex";
     onProductoChange();
   }
@@ -877,7 +873,6 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
   function onProductoChange() {
     const prodId = productoSelect.value;
     const prod = CONFIG.productos[prodId];
-
     if (!prod) return;
 
     heroProductName.textContent = prod.nombre;
@@ -900,6 +895,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
 
     productTaglineEl.textContent = prod.tagline || "";
     heroYieldEl.textContent = prod.rinde || "";
+
     heroTagLeft.querySelector("span.icon").textContent = "★";
     heroTagLeft.querySelector("span:last-child").textContent =
       prod.esCombo ? "Pack degustación" : "Favorito de la casa";
@@ -908,7 +904,6 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
     heroTagRight.querySelector("span:last-child").textContent =
       prod.picanteNivel || "Intensidad";
 
-    // stock
     if (typeof prod.stockPaquetesHoy === "number" && prod.stockPaquetesHoy > 0) {
       if (prod.stockPaquetesHoy <= 4) {
         stockWarningEl.textContent =
@@ -933,16 +928,14 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
     if (!prod) return;
 
     let gramos = parseInt(gramosInput.value, 10) || 0;
-    if (prod.esCombo) {
-      gramos = 2500; // fijo para el combo
-    }
+    if (prod.esCombo) gramos = 2500;
 
     if (gramos <= 0) {
       alert("Indicá los gramos que necesitás.");
       return;
     }
 
-    const picante = picanteSelect.value; // "si", "no" o ""
+    const picante = picanteSelect.value; // "si" / "no" / ""
 
     const total = calcularPrecioProducto(prod, gramos);
 
@@ -956,11 +949,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
 
     renderCart();
 
-    // limpiar campos de producto (pero no el producto seleccionado)
     gramosInput.value = prod.esCombo ? 2500 : "";
     picanteSelect.value = "";
 
-    // upsell si aplica
     mostrarUpsell(prodId);
   }
 
@@ -1024,11 +1015,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
       tdGram.textContent = item.gramos + " g";
 
       const tdPic = document.createElement("td");
-      tdPic.textContent = item.picante === "si"
-        ? "Picante"
-        : item.picante === "no"
-          ? "No picante"
-          : "-";
+      tdPic.textContent =
+        item.picante === "si" ? "Picante" :
+        item.picante === "no" ? "No picante" : "-";
 
       const tdTot = document.createElement("td");
       tdTot.textContent = formatoColones(item.total);
@@ -1053,7 +1042,6 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
 
     totalDisplay.textContent = formatoColones(total);
 
-    // puntos basados en total SIN descuento (descuento no afecta puntos)
     const puntos = Math.floor(total / CONFIG.colonesPorPunto);
     pointsDisplay.textContent = puntos;
   }
@@ -1063,26 +1051,20 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
   // =============================
   // PUNTOS / CLIENTE
   // =============================
-  const telefonoInput = document.getElementById("telefonoInput");
-  const nombreInput = document.getElementById("nombreInput");
-
   document.getElementById("buscarClienteBtn").addEventListener("click", () => {
     const tel = telefonoInput.value.trim();
     if (!tel) {
       alert("Indicá tu número de teléfono primero.");
       return;
     }
-
     state.telefono = tel;
     state.nombre = nombreInput.value.trim() || "";
 
-    // TODO: Aquí va la llamada real a Apps Script para traer puntos y última compra.
-    // Simulación por ahora:
+    // TODO: sustituir esta simulación por fetch a APPS_SCRIPT_URL
     simularConsultaCliente(tel);
   });
 
   function simularConsultaCliente(tel) {
-    // Simulación tonta: si termina en 22, tiene puntos y última compra
     if (tel.endsWith("22")) {
       state.puntos = 250;
       state.lastOrderSummary = "Tex-Mex 1000 g + Caribeño 500 g";
@@ -1151,11 +1133,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
     const puntosGanados = Math.floor(total / CONFIG.colonesPorPunto);
 
     const resumenLineas = cart.map(item => {
-      const pic = item.picante === "si"
-        ? " (picante)"
-        : item.picante === "no"
-          ? " (no picante)"
-          : "";
+      const pic =
+        item.picante === "si" ? " (picante)" :
+        item.picante === "no" ? " (no picante)" : "";
       return `• ${item.nombre} – ${item.gramos} g${pic}: ${formatoColones(item.total)}`;
     }).join("\n");
 
@@ -1167,23 +1147,24 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
       (comentarios ? `Notas del cliente:\n${comentarios}\n\n` : "") +
       `Tus descuentos NO reducen tus puntos acumulados.`;
 
-    // TODO: aquí debés:
-    // 1) Enviar al Apps Script (saveOrder) con el payload actual.
-    // 2) Opcionalmente abrir WhatsApp con el mensaje.
-
     console.log("Mensaje de pedido:", mensaje);
+
+    // TODO:
+    // 1) Hacer fetch a APPS_SCRIPT_URL con method:"POST" y payload JSON.
+    // 2) (Opcional) Abrir WhatsApp con este mensaje.
+
     alert("Simulación de envío:\n\n" + mensaje);
   });
 
   // =============================
-  // MODO CLARO / OSCURO
+  // MODO CLARO/OSCURO
   // =============================
   const modeToggle = document.getElementById("modeToggle");
   const modeIcon = document.getElementById("modeIcon");
   const modeLabel = document.getElementById("modeLabel");
 
   function aplicarTema(desired) {
-    const tema = desired || localStorage.getItem("ma_theme") || "light";
+    const tema = desired || localStorage.getItem("ma_theme") || "dark";
     if (tema === "dark") {
       document.body.classList.add("dark");
       modeIcon.textContent = "🌙";
@@ -1197,8 +1178,8 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
   }
 
   modeToggle.addEventListener("click", () => {
-    const actualEsDark = document.body.classList.contains("dark");
-    aplicarTema(actualEsDark ? "light" : "dark");
+    const esDark = document.body.classList.contains("dark");
+    aplicarTema(esDark ? "light" : "dark");
   });
 
   // =============================
@@ -1206,10 +1187,9 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5
   // =============================
   window.addEventListener("DOMContentLoaded", () => {
     initProductos();
-    aplicarTema();
+    aplicarTema("dark"); // default: oscuro
   });
 </script>
 
 </body>
 </html>
-
