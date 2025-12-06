@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>4:45 Monte Alto – Calculadora</title>
+  <title>4:55 Monte Alto – Calculadora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -179,6 +179,7 @@
       display: flex;
       justify-content: center;
       position: relative;
+      touch-action: pan-y;
     }
 
     .hero-plate {
@@ -286,6 +287,55 @@
       font-size: 12px;
       color: var(--danger);
       margin-top: 4px;
+    }
+
+    /* Carrusel nav */
+    .hero-carousel-nav {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-nav-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(0,0,0,0.35);
+      color: #fefefe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    body:not(.dark) .hero-nav-btn {
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .hero-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #455a64;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .hero-dot.active {
+      background: #ffca28;
+      transform: scale(1.5);
     }
 
     .form-section-title {
@@ -726,8 +776,8 @@
     </div>
 
     <div class="hero-layout">
-      <!-- Imagen / hero -->
-      <div class="hero-image-wrap">
+      <!-- Imagen / hero (ahora carrusel) -->
+      <div class="hero-image-wrap" id="heroImageWrap">
         <div class="hero-plate">
           <img id="heroImage"
                src="Tex-Mex.png"
@@ -769,6 +819,13 @@
           Agregar al carrito
         </button>
       </div>
+    </div>
+
+    <!-- NAV DEL CARRUSEL -->
+    <div class="hero-carousel-nav">
+      <button class="hero-nav-btn" type="button" id="heroPrevBtn" aria-label="Producto anterior">‹</button>
+      <div class="hero-dots" id="heroDots"></div>
+      <button class="hero-nav-btn" type="button" id="heroNextBtn" aria-label="Producto siguiente">›</button>
     </div>
   </div>
 
@@ -988,6 +1045,16 @@
     }
   };
 
+  // Orden del carrusel
+  const HERO_ORDER = [
+    "texmex",
+    "caribeno",
+    "criollo",
+    "bratwurst",
+    "bacon",
+    "comboSurtido"
+  ].filter(id => CONFIG.productos[id]); // por si alguno faltara
+
   // =============================
   // ESTADO
   // =============================
@@ -1001,6 +1068,7 @@
   };
 
   let cart = [];
+  let currentHeroIndex = 0;
 
   // =============================
   // UTILIDADES
@@ -1064,7 +1132,9 @@
   const productoSelect = document.getElementById("productoSelect");
   const picanteSelect = document.getElementById("picanteSelect");
   const gramosInput = document.getElementById("gramosInput");
+
   const heroImage = document.getElementById("heroImage");
+  const heroImageWrap = document.getElementById("heroImageWrap");
   const heroProductName = document.getElementById("heroProductName");
   const heroPrice = document.getElementById("heroPrice");
   const productTaglineEl = document.getElementById("productTagline");
@@ -1073,6 +1143,10 @@
   const heroTagLeft = document.getElementById("heroTagLeft");
   const heroTagRight = document.getElementById("heroTagRight");
   const stockWarningEl = document.getElementById("stockWarning");
+
+  const heroPrevBtn = document.getElementById("heroPrevBtn");
+  const heroNextBtn = document.getElementById("heroNextBtn");
+  const heroDotsEl = document.getElementById("heroDots");
 
   const totalDisplay = document.getElementById("totalDisplay");
   const pointsDisplay = document.getElementById("pointsDisplay");
@@ -1097,24 +1171,32 @@
   const modeToggle = document.getElementById("modeToggle");
 
   // =============================
-  // PRODUCTOS / HERO
+  // PRODUCTOS / HERO + CARRUSEL
   // =============================
   function initProductos() {
     productoSelect.innerHTML = "";
-    Object.values(CONFIG.productos).forEach(prod => {
+    HERO_ORDER.forEach(id => {
+      const prod = CONFIG.productos[id];
+      if (!prod) return;
       const opt = document.createElement("option");
       opt.value = prod.id;
       opt.textContent = prod.nombre;
       productoSelect.appendChild(opt);
     });
-    productoSelect.value = "texmex";
+    currentHeroIndex = 0;
+    productoSelect.value = HERO_ORDER[0];
     onProductoChange();
+    renderHeroDots();
   }
 
   function onProductoChange() {
     const prodId = productoSelect.value;
     const prod = CONFIG.productos[prodId];
     if (!prod) return;
+
+    // actualizar índice del carrusel según select
+    const idx = HERO_ORDER.indexOf(prodId);
+    if (idx >= 0) currentHeroIndex = idx;
 
     heroProductName.textContent = prod.nombre;
     heroImage.src = prod.imagen;
@@ -1156,9 +1238,64 @@
     } else {
       stockWarningEl.style.display = "none";
     }
+
+    renderHeroDots();
   }
 
   productoSelect.addEventListener("change", onProductoChange);
+
+  function renderHeroDots() {
+    heroDotsEl.innerHTML = "";
+    HERO_ORDER.forEach((id, index) => {
+      const dot = document.createElement("div");
+      dot.className = "hero-dot" + (index === currentHeroIndex ? " active" : "");
+      dot.addEventListener("click", () => {
+        heroShowIndex(index);
+      });
+      heroDotsEl.appendChild(dot);
+    });
+  }
+
+  function heroShowIndex(index) {
+    const len = HERO_ORDER.length;
+    if (!len) return;
+    currentHeroIndex = (index + len) % len;
+    const prodId = HERO_ORDER[currentHeroIndex];
+    productoSelect.value = prodId;
+    onProductoChange();
+  }
+
+  document.getElementById("heroPrevBtn").addEventListener("click", () => {
+    heroShowIndex(currentHeroIndex - 1);
+  });
+
+  document.getElementById("heroNextBtn").addEventListener("click", () => {
+    heroShowIndex(currentHeroIndex + 1);
+  });
+
+  // Swipe en la imagen
+  let touchStartX = null;
+  heroImageWrap.addEventListener("touchstart", (e) => {
+    if (!e.touches || !e.touches.length) return;
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  heroImageWrap.addEventListener("touchend", (e) => {
+    if (touchStartX == null) return;
+    const touchEndX = e.changedTouches && e.changedTouches[0]
+      ? e.changedTouches[0].clientX
+      : touchStartX;
+    const deltaX = touchEndX - touchStartX;
+    const threshold = 40; // px
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX < 0) {
+        heroShowIndex(currentHeroIndex + 1); // swipe izquierda -> siguiente
+      } else {
+        heroShowIndex(currentHeroIndex - 1); // swipe derecha -> anterior
+      }
+    }
+    touchStartX = null;
+  });
 
   // =============================
   // CARRITO
@@ -1341,8 +1478,8 @@
       }
     }
 
-    // Aquí deberíamos hacer fetch a APPS_SCRIPT_URL.
-    // Mientras tanto, simulamos la respuesta:
+    // Aquí debería ir el fetch real a APPS_SCRIPT_URL.
+    // Por ahora, simulamos:
     simularConsultaCliente(telNormalizado);
   }
 
