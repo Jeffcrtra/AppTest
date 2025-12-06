@@ -146,7 +146,7 @@
 
     .carousel-viewport {
       position: relative;
-      overflow: visible;
+      overflow: Hidden;
       padding: 6px 0;
     }
 
@@ -759,13 +759,22 @@
     });
   }
 
-  function updateTrackPosition() {
-    if (!slides.length) return;
-    const first = slides[0];
-    const slideWidth = first.getBoundingClientRect().width;
-    const offset = currentIndex * (slideWidth + gapPx);
-    track.style.transform = `translateX(-${offset}px)`;
-  }
+function updateTrackPosition() {
+  if (!slides.length) return;
+
+  const first = slides[0];
+  const slideWidth = first.getBoundingClientRect().width;
+  const viewport = document.querySelector(".carousel-viewport");
+  const viewportWidth = viewport.getBoundingClientRect().width;
+
+  // cuánto espacio sobra a los lados del slide dentro del viewport
+  const extra = (viewportWidth - slideWidth) / 2;
+
+  // centramos el slide actual y dejamos un poquito de vecino
+  const offset = currentIndex * (slideWidth + gapPx) - extra;
+
+  track.style.transform = `translateX(-${offset}px)`;
+}
 
   /* ----- LISTA INFERIOR ----- */
 
@@ -908,3 +917,4 @@
 </script>
 </body>
 </html>
+
