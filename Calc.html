@@ -2,21 +2,21 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>5.25 Monte Alto – Calculadora (Lab Carrusel)</title>
+  <title>5:40 Monte Alto – Calculadora (Lab Carrusel)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --bg-main: #0f1115;
-      --bg-light: #fdf9f0;
-      --bg-dark: #141417;
+      --bg-main: #05060a;
+      --bg-card-top: #191c24;
+      --bg-card-bottom: #11131a;
       --accent: #ffd54a;
       --accent-soft: #ffe089;
-      --text-main: #1b1b1f;
-      --text-muted: #77757f;
-      --pill-bg: #fff7e3;
+      --text-main: #f7f5ff;
+      --text-muted: #9a9fb5;
+      --pill-bg: #262936;
       --radius-xl: 28px;
       --radius-lg: 20px;
-      --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.45);
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
       --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
         "Roboto", sans-serif;
     }
@@ -37,6 +37,25 @@
       color: var(--text-main);
     }
 
+    /* Modo claro básico */
+    body.light-mode {
+      background: radial-gradient(circle at top, #fdf9f0 0, #e1dacb 60%);
+    }
+    body.light-mode .card-top {
+      background: #fdf9f0;
+      color: #1b1b1f;
+    }
+    body.light-mode .card-bottom {
+      background: #141417;
+    }
+    body.light-mode .hero-name {
+      color: #141417;
+    }
+    body.light-mode .hero-desc,
+    body.light-mode .hero-meta-row span {
+      color: #77757f;
+    }
+
     .app {
       width: 100%;
       max-width: 420px;
@@ -49,32 +68,35 @@
     }
 
     .card-top {
-      background: rgba(255, 254, 250, 0.96);
+      background: var(--bg-card-top);
       border-radius: 32px 32px 0 0;
-      padding: 16px 18px 24px 18px;
+      padding: 14px 18px 20px 18px;
       box-shadow: var(--shadow-soft);
       position: relative;
       z-index: 2;
+      color: var(--text-main);
     }
 
     header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
+      justify-content: flex-end;
+      margin-bottom: 8px;
     }
 
-    .pill-icon {
+    .mode-toggle {
       width: 34px;
       height: 34px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.9);
+      border: none;
+      background: #262938;
+      color: #f7f5ff;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-      font-size: 18px;
       cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      font-size: 17px;
     }
 
     .title-section {
@@ -84,8 +106,8 @@
     }
 
     h1 {
-      font-size: 16px;
-      letter-spacing: 0.03em;
+      font-size: 14px;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--text-muted);
     }
@@ -101,13 +123,13 @@
       font-size: 24px;
       font-weight: 700;
       line-height: 1.1;
-      color: #141417;
+      color: #fdfdfd;
     }
 
     .hero-price {
       font-size: 16px;
       font-weight: 700;
-      color: #d88d17;
+      color: #f7b94a;
     }
 
     .hero-sub {
@@ -118,7 +140,7 @@
     /* CARRUSEL */
 
     .hero-carousel-wrap {
-      margin: 16px 0 8px;
+      margin: 14px 0 8px;
       position: relative;
     }
 
@@ -134,7 +156,7 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 36px;
+      width: 32px;
       pointer-events: none;
       z-index: 3;
     }
@@ -143,13 +165,28 @@
       left: 0;
       background: linear-gradient(
         to right,
-        rgba(253,249,240,1) 0%,
-        rgba(253,249,240,0) 100%
+        rgba(25,28,36,1) 0%,
+        rgba(25,28,36,0) 100%
       );
     }
 
     .carousel-viewport::after {
       right: 0;
+      background: linear-gradient(
+        to left,
+        rgba(25,28,36,1) 0%,
+        rgba(25,28,36,0) 100%
+      );
+    }
+
+    body.light-mode .carousel-viewport::before {
+      background: linear-gradient(
+        to right,
+        rgba(253,249,240,1) 0%,
+        rgba(253,249,240,0) 100%
+      );
+    }
+    body.light-mode .carousel-viewport::after {
       background: linear-gradient(
         to left,
         rgba(253,249,240,1) 0%,
@@ -169,7 +206,7 @@
       border-radius: 28px;
       background: radial-gradient(circle at top, #f6e1c8 0, #d9a66b 60%, #b6793e 100%);
       height: 160px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
       overflow: hidden;
       position: relative;
       transform-origin: center center;
@@ -187,7 +224,7 @@
     .slide.active {
       opacity: 1;
       transform: scale(1);
-      box-shadow: 0 24px 52px rgba(0,0,0,0.45);
+      box-shadow: 0 24px 52px rgba(0,0,0,0.6);
     }
 
     .slide.prev,
@@ -209,9 +246,9 @@
       top: 10px;
       padding: 5px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.9);
+      background: rgba(10,10,10,0.82);
       font-size: 11px;
-      color: #5a3b15;
+      color: #f7f5ff;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -226,6 +263,7 @@
       align-items: center;
       justify-content: center;
       font-size: 10px;
+      color: #3a2b12;
     }
 
     /* Flechas encima del carrusel */
@@ -239,13 +277,13 @@
       border-radius: 999px;
       border: none;
       cursor: pointer;
-      background: radial-gradient(circle at 30% 20%, #ffffff 0, #d0c4b1 70%);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+      background: radial-gradient(circle at 30% 20%, #2a2d35 0, #090b10 70%);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.7);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 4;
-      color: #3a3325;
+      color: #f7f5ff;
       font-size: 18px;
     }
 
@@ -268,7 +306,7 @@
       width: 6px;
       height: 6px;
       border-radius: 999px;
-      background: #d1c8ba;
+      background: #3b3f4a;
       transition: background 0.2s, transform 0.2s;
     }
 
@@ -289,18 +327,18 @@
     .hero-desc {
       font-size: 13px;
       margin-top: 4px;
-      color: #4e4b54;
+      color: #c7cadb;
     }
 
     /* bottom card (oscura) */
 
     .card-bottom {
       margin-top: -18px;
-      background: var(--bg-dark);
+      background: var(--bg-card-bottom);
       border-radius: 28px;
       padding: 20px 18px 18px;
       color: #f6f5ff;
-      box-shadow: 0 -8px 30px rgba(0,0,0,0.4);
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.5);
     }
 
     .bottom-header {
@@ -397,7 +435,7 @@
       margin-top: 8px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .subtotal-row {
@@ -411,6 +449,14 @@
     .subtotal-row strong {
       font-size: 16px;
       color: #ffffff;
+    }
+
+    .cart-row {
+      font-size: 11px;
+      color: #b6b0cf;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .btn-primary {
@@ -428,7 +474,7 @@
       justify-content: center;
       gap: 10px;
       cursor: pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.45);
     }
 
     .btn-primary span.icon {
@@ -467,18 +513,16 @@
 <div class="app">
   <div class="card-top">
     <header>
-      <div class="pill-icon" title="Atrás">‹</div>
-      <div class="pill-icon" title="Inicio">🏠</div>
-      <div class="pill-icon" title="Compartir">⟳</div>
+      <button class="mode-toggle" id="modeToggle" title="Modo claro/oscuro">🌙</button>
     </header>
 
     <div class="title-section">
       <h1>Monte Alto – Calculadora</h1>
       <div class="hero-name-row">
-        <div class="hero-name" id="heroName">Tex-Mex</div>
-        <div class="hero-price" id="heroPrice">₡8 500 / kg</div>
+        <div class="hero-name" id="heroName">Bratwurst</div>
+        <div class="hero-price" id="heroPrice">₡8 900 / kg</div>
       </div>
-      <div class="hero-sub" id="heroSub">Chorizo artesanal Monte Alto</div>
+      <div class="hero-sub" id="heroSub">Suave, mantecoso, estilo alemán</div>
     </div>
 
     <div class="hero-carousel-wrap">
@@ -493,17 +537,17 @@
     </div>
 
     <div class="hero-meta-row">
-      <span id="heroMeta">Rinde aprox. 3–4 porciones.</span>
+      <span id="heroMeta">Para 3–4 panes</span>
       <span>500 g sugeridos</span>
     </div>
     <p class="hero-desc" id="heroDesc">
-      Molienda fresca con especias tostadas y un toque ahumado.
+      Suave, jugoso, perfecto para hot dogs premium.
     </p>
   </div>
 
   <div class="card-bottom">
     <div class="bottom-header">
-      <h2>Nuestros chorizos</h2>
+      <h2>Nuestros productos</h2>
       <span class="badge-soft">Toca para seleccionar</span>
     </div>
 
@@ -515,6 +559,10 @@
       <div class="subtotal-row">
         <span>Subtotal estimado (500 g)</span>
         <strong id="subtotalDisplay">₡0</strong>
+      </div>
+      <div class="cart-row" id="cartRow">
+        <span>Carrito: 0 productos</span>
+        <span>₡0</span>
       </div>
       <button class="btn-primary" id="addBtn">
         <span>Agregar al carrito (demo)</span>
@@ -557,7 +605,7 @@
     },
     {
       id: "tico",
-      nombre: "Chorizo Costarricense Casero",
+      nombre: "Tico Casero",
       precioKg: 8300,
       favorito: true,
       picanteIcon: "🇨🇷",
@@ -606,7 +654,7 @@
     {
       id: "combo",
       nombre: "Combo surtido Monte Alto",
-      precioKg: 0, // se maneja como combo
+      precioKg: 0,
       favorito: true,
       picanteIcon: "⭐",
       tagline: "500 g de cada chorizo",
@@ -632,12 +680,16 @@
   const SUBTOTAL_DISPLAY = document.getElementById("subtotalDisplay");
   const POINTS_DISPLAY = document.getElementById("pointsDisplay");
   const ADD_BTN = document.getElementById("addBtn");
+  const CART_ROW = document.getElementById("cartRow");
+  const MODE_TOGGLE = document.getElementById("modeToggle");
 
   let currentIndex = 0;
   let slides = [];
   const gapPx = 14;
   const gramosBase = 500;
   const colonesPorPunto = 100;
+
+  const cart = [];
 
   function formatoColones(valor) {
     return "₡" + valor.toLocaleString("es-CR");
@@ -677,7 +729,6 @@
 
     slides = Array.from(track.querySelectorAll(".slide"));
 
-    // dots
     PRODUCTS.forEach((_p, idx) => {
       const d = document.createElement("div");
       d.className = "dot";
@@ -782,7 +833,7 @@
     HERO_PRICE.textContent = prod.precioKg > 0
       ? `${formatoColones(prod.precioKg)} / kg`
       : "Combo surtido";
-    HERO_SUB.textContent = prod.tagline || "Chorizo artesanal Monte Alto";
+    HERO_SUB.textContent = prod.tagline || "Producto Monte Alto";
     HERO_META.textContent = prod.rinde;
     HERO_DESC.textContent = prod.descHero;
 
@@ -795,19 +846,29 @@
     POINTS_DISPLAY.textContent = puntos + " pts";
   }
 
-  /* ----- BOTÓN AGREGAR (DEMO) ----- */
+  /* ----- CARRITO (sin alert) ----- */
+
+  function updateCartRow() {
+    const totalProductos = cart.length;
+    const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
+    CART_ROW.firstElementChild.textContent = `Carrito: ${totalProductos} producto${totalProductos !== 1 ? "s" : ""}`;
+    CART_ROW.lastElementChild.textContent = formatoColones(totalColones);
+  }
 
   ADD_BTN.addEventListener("click", () => {
     const prod = PRODUCTS[currentIndex];
     const subtotal = calcularSubtotal(prod, gramosBase);
-    const msg = `Agregar al carrito (DEMO):\n\n` +
-      `${prod.nombre} – ${gramosBase} g\n` +
-      (subtotal > 0 ? `Subtotal aprox: ${formatoColones(subtotal)}\n` : "Combo, precio según detalle.\n") +
-      `\n(En esta app de laboratorio todavía no se envía nada al Google Sheet 😉)`;
-    alert(msg);
+    cart.push({
+      id: prod.id,
+      nombre: prod.nombre,
+      gramos: gramosBase,
+      subtotal
+    });
+    updateCartRow();
+    console.log("Carrito (demo):", cart);
   });
 
-  /* ----- CONTROL FLECHAS Y RESIZE ----- */
+  /* ----- CONTROL FLECHAS, MODO Y RESIZE ----- */
 
   prevBtn.addEventListener("click", () => {
     currentIndex = (currentIndex - 1 + PRODUCTS.length) % PRODUCTS.length;
@@ -821,6 +882,12 @@
 
   window.addEventListener("resize", () => {
     updateTrackPosition();
+  });
+
+  MODE_TOGGLE.addEventListener("click", () => {
+    document.body.classList.toggle("light-mode");
+    const isLight = document.body.classList.contains("light-mode");
+    MODE_TOGGLE.textContent = isLight ? "☀" : "🌙";
   });
 
   /* ----- ORQUESTA FINAL ----- */
@@ -837,6 +904,7 @@
   createSlides();
   renderProductList();
   updateUI();
+  updateCartRow();
 </script>
 </body>
 </html>
