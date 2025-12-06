@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>4:10 Monte Alto – Calculadora</title>
+  <title>4:23 Monte Alto – Calculadora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -30,13 +30,13 @@
         "Roboto", sans-serif;
     }
 
-    /* OVERRIDES PARA MODO OSCURO (DEFAULT) CON AZULES + VERDE MONTE ALTO */
+    /* MODO OSCURO (DEFAULT) CON AZULES + VERDE MONTE ALTO */
     body.dark {
-      --bg-main: #0a1a2a;          /* fondo general */
-      --bg-card: #17202a;          /* tarjetas */
-      --bg-dark: #0f1419;          /* zonas profundas */
+      --bg-main: #0a1a2a;
+      --bg-card: #17202a;
+      --bg-dark: #0f1419;
 
-      --accent: #4caf50;           /* verde Monte Alto */
+      --accent: #4caf50;
       --accent-hover: #66bb6a;
 
       --text-main: #f2f2f2;
@@ -91,14 +91,6 @@
       padding: 16px 18px 18px;
       box-shadow: var(--shadow-soft);
       position: relative;
-    }
-
-    .hero {
-      /* nada extra */
-    }
-
-    .form-cart {
-      /* nada extra */
     }
 
     header.app-header {
@@ -364,6 +356,19 @@
       flex: 1;
     }
 
+    .checkbox-inline {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .checkbox-inline input {
+      width: auto;
+    }
+
     .points-banner {
       font-size: 12px;
       padding: 6px 8px;
@@ -616,7 +621,13 @@
         <div class="field-group">
           <label for="telefonoInput">Teléfono (WhatsApp)</label>
           <input type="text" id="telefonoInput" placeholder="Ej: 6066-8322">
-          <small class="helper">Usamos este número para tus puntos y el resumen del pedido.</small>
+          <small class="helper">
+            Usamos este número para tus puntos y el resumen del pedido.
+          </small>
+          <label class="checkbox-inline">
+            <input type="checkbox" id="rememberPhoneChk" checked>
+            <span>Recordar mi número en este dispositivo</span>
+          </label>
         </div>
         <div class="field-group">
           <label for="nombreInput">Nombre</label>
@@ -807,7 +818,8 @@
     nombre: "",
     puntos: 0,
     lastOrderSummary: null,
-    lastOrderItems: null
+    lastOrderItems: null,
+    lastLookupTel: ""
   };
 
   let cart = [];
@@ -817,6 +829,16 @@
   // =============================
   function formatoColones(valor) {
     return "₡" + (valor || 0).toLocaleString("es-CR");
+  }
+
+  // Limpia el teléfono: deja solo dígitos y se queda con los ÚLTIMOS 8
+  function normalizePhone(raw) {
+    if (!raw) return "";
+    const digitsOnly = raw.replace(/\D/g, "");
+    if (!digitsOnly) return "";
+    return digitsOnly.length > 8
+      ? digitsOnly.slice(-8)
+      : digitsOnly;
   }
 
   function calcularPrecioProducto(prod, gramos) {
@@ -854,6 +876,7 @@
   const lastOrderText = document.getElementById("lastOrderText");
   const telefonoInput = document.getElementById("telefonoInput");
   const nombreInput = document.getElementById("nombreInput");
+  const rememberPhoneChk = document.getElementById("rememberPhoneChk");
 
   // =============================
   // PRODUCTOS
@@ -1051,17 +1074,36 @@
   // =============================
   // PUNTOS / CLIENTE
   // =============================
-  document.getElementById("buscarClienteBtn").addEventListener("click", () => {
-    const tel = telefonoInput.value.trim();
-    if (!tel) {
-      alert("Indicá tu número de teléfono primero.");
-      return;
-    }
-    state.telefono = tel;
+  function hacerLookupCliente(telNormalizado) {
+    if (!telNormalizado || telNormalizado.length !== 8) return;
+
+    // Evitar repetir la misma consulta innecesariamente
+    if (state.lastLookupTel === telNormalizado) return;
+    state.lastLookupTel = telNormalizado;
+    state.telefono = telNormalizado;
     state.nombre = nombreInput.value.trim() || "";
 
+    // Guardar en localStorage si el usuario quiere
+    if (rememberPhoneChk.checked) {
+      try {
+        localStorage.setItem("ma_phone", telNormalizado);
+      } catch (e) {
+        console.warn("No se pudo guardar el teléfono en localStorage:", e);
+      }
+    }
+
     // TODO: sustituir esta simulación por fetch a APPS_SCRIPT_URL
-    simularConsultaCliente(tel);
+    simularConsultaCliente(telNormalizado);
+  }
+
+  document.getElementById("buscarClienteBtn").addEventListener("click", () => {
+    const telNorm = normalizePhone(telefonoInput.value);
+    telefonoInput.value = telNorm;
+    if (!telNorm || telNorm.length !== 8) {
+      alert("Indicá un número de 8 dígitos.");
+      return;
+    }
+    hacerLookupCliente(telNorm);
   });
 
   function simularConsultaCliente(tel) {
@@ -1112,6 +1154,18 @@
     alert("Listo, cargamos un pedido similar al de la vez pasada. Podés ajustarlo antes de enviar.");
   });
 
+  // Auto-normalizar teléfono y disparar lookup cuando llegue a 8 dígitos
+  telefonoInput.addEventListener("input", () => {
+    const before = telefonoInput.value;
+    const norm = normalizePhone(before);
+    if (before !== norm) {
+      telefonoInput.value = norm;
+    }
+    if (norm.length === 8) {
+      hacerLookupCliente(norm);
+    }
+  });
+
   // =============================
   // ENVIAR PEDIDO
   // =============================
@@ -1121,10 +1175,13 @@
       return;
     }
 
-    const tel = telefonoInput.value.trim();
+    const telNorm = normalizePhone(telefonoInput.value);
+    telefonoInput.value = telNorm;
+
+    const tel = telNorm;
     const nom = nombreInput.value.trim();
-    if (!tel || !nom) {
-      alert("Indicá tu teléfono y nombre antes de enviar el pedido.");
+    if (!tel || tel.length !== 8 || !nom) {
+      alert("Indicá tu teléfono (8 dígitos) y nombre antes de enviar el pedido.");
       return;
     }
 
@@ -1174,7 +1231,11 @@
       modeIcon.textContent = "☀";
       modeLabel.textContent = "Modo claro";
     }
-    localStorage.setItem("ma_theme", tema);
+    try {
+      localStorage.setItem("ma_theme", tema);
+    } catch (e) {
+      console.warn("No se pudo guardar el tema en localStorage:", e);
+    }
   }
 
   modeToggle.addEventListener("click", () => {
@@ -1188,9 +1249,19 @@
   window.addEventListener("DOMContentLoaded", () => {
     initProductos();
     aplicarTema("dark"); // default: oscuro
+
+    // Intentar cargar teléfono recordado
+    try {
+      const savedTel = localStorage.getItem("ma_phone");
+      if (savedTel && savedTel.length === 8) {
+        telefonoInput.value = savedTel;
+        hacerLookupCliente(savedTel);
+      }
+    } catch (e) {
+      console.warn("No se pudo leer ma_phone de localStorage:", e);
+    }
   });
 </script>
 
 </body>
 </html>
-
