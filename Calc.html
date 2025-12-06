@@ -2,18 +2,20 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>4:23 Monte Alto – Calculadora</title>
+  <title>4:45 Monte Alto – Calculadora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     :root {
-      /* PALETA CLARA (si el usuario cambia a modo claro) */
+      /* PALETA CLARA (modo claro) */
       --bg-main: #f5f0e8;
       --bg-card: rgba(255, 254, 250, 0.96);
       --bg-dark: #141417;
 
-      --accent: #4caf50;
+      --accent: #4caf50;          /* verde Monte Alto (cajas, botones secundarios) */
       --accent-hover: #66bb6a;
+
+      --accent-cta: #f4ff3b;      /* amarillo original para CTA (enviar / repetir) */
 
       --text-main: #1b1b1f;
       --text-muted: #77757f;
@@ -35,9 +37,6 @@
       --bg-main: #0a1a2a;
       --bg-card: #17202a;
       --bg-dark: #0f1419;
-
-      --accent: #4caf50;
-      --accent-hover: #66bb6a;
 
       --text-main: #f2f2f2;
       --text-muted: #a0aec0;
@@ -71,6 +70,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      position: relative;
     }
 
     .top-row {
@@ -91,6 +91,7 @@
       padding: 16px 18px 18px;
       box-shadow: var(--shadow-soft);
       position: relative;
+      overflow: hidden;
     }
 
     header.app-header {
@@ -119,36 +120,26 @@
       color: var(--text-muted);
     }
 
-    .mode-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 8px;
+    /* Botón pequeño modo claro/oscuro (esquina superior derecha) */
+    .mode-btn {
+      width: 32px;
+      height: 32px;
       border-radius: 999px;
-      background: rgba(0,0,0,0.06);
-      cursor: pointer;
-      font-size: 11px;
-    }
-
-    body.dark .mode-toggle {
-      background: rgba(255,255,255,0.08);
-    }
-
-    .mode-toggle span.icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 999px;
-      background: #ffffff;
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.18);
+      color: #ffd54f;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      font-size: 17px;
     }
 
-    body.dark .mode-toggle span.icon {
-      background: #0a1a2a;
-      color: var(--accent);
+    body:not(.dark) .mode-btn {
+      background: rgba(255,255,255,0.9);
+      color: #ffb300;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
     h1 {
@@ -276,6 +267,7 @@
       flex-wrap: wrap;
       gap: 6px;
       color: var(--text-muted);
+      margin-top: 4px;
     }
 
     .pill {
@@ -408,10 +400,11 @@
       padding: 4px 8px;
       border-radius: 999px;
       border: none;
-      background: var(--accent);
+      background: var(--accent-cta);
       cursor: pointer;
       font-size: 11px;
       color: #0a1a2a;
+      font-weight: 600;
     }
 
     .btn {
@@ -430,15 +423,28 @@
       background: var(--accent);
       color: #0a1a2a;
       box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-      width: 100%;
       justify-content: center;
-      padding: 12px 16px;
-      font-size: 15px;
+      padding: 10px 16px;
+      font-size: 14px;
       transition: background 0.2s ease;
     }
 
     .btn-primary:hover {
       background: var(--accent-hover);
+    }
+
+    .btn-cta {
+      background: var(--accent-cta);
+      color: #111;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.65);
+      justify-content: center;
+      padding: 12px 18px;
+      font-size: 15px;
+      transition: transform 0.1s ease;
+    }
+
+    .btn-cta:active {
+      transform: scale(0.97);
     }
 
     .btn-secondary {
@@ -451,6 +457,14 @@
       background: #ffffff;
       color: #333;
       border-color: #ddd;
+    }
+
+    .btn-hero-add {
+      margin-top: 10px;
+      align-self: flex-start;
+      font-size: 13px;
+      padding: 8px 13px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
     }
 
     .btn span.icon {
@@ -474,12 +488,162 @@
       justify-content: center;
     }
 
+    /* Picante naranja cuando valor = "si" */
+    .picante-hot {
+      border-color: #ff9800 !important;
+      background: rgba(255, 152, 0, 0.1) !important;
+      color: #ffcc80 !important;
+    }
+
+    body:not(.dark) .picante-hot {
+      background: #fff3e0 !important;
+      color: #e65100 !important;
+    }
+
+    hr.separator {
+      border: none;
+      border-top: 1px solid #1b2838;
+      margin: 12px 0 10px;
+    }
+
+    body:not(.dark) hr.separator {
+      border-top-color: rgba(0,0,0,0.06);
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .totals-row strong {
+      font-size: 16px;
+    }
+
+    .totals-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .footer-note {
+      font-size: 11px;
+      margin-top: 4px;
+      color: var(--text-muted);
+    }
+
+    /* Carrito como drawer lateral */
+    .cart-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .cart-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: none;
+      background: #1b2838;
+      color: #e0e6ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      font-size: 16px;
+    }
+
+    body:not(.dark) .cart-icon-btn {
+      background: #ffffff;
+      color: #333;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.16);
+    }
+
+    .cart-count-badge {
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.25);
+      color: #e0e6ed;
+    }
+
+    body:not(.dark) .cart-count-badge {
+      background: rgba(0,0,0,0.06);
+      color: #444;
+    }
+
+    .cart-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: flex-end;
+      z-index: 40;
+    }
+
+    .cart-drawer-overlay.open {
+      display: flex;
+    }
+
+    .cart-drawer {
+      width: 88%;
+      max-width: 360px;
+      background: var(--bg-card);
+      height: 100%;
+      box-shadow: -6px 0 20px rgba(0,0,0,0.7);
+      transform: translateX(100%);
+      transition: transform 0.22s ease-out;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 14px 16px;
+    }
+
+    .cart-drawer.open {
+      transform: translateX(0);
+    }
+
+    .cart-drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .cart-drawer-header h3 {
+      font-size: 15px;
+    }
+
+    .cart-close-btn {
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .cart-empty {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 6px 0;
+    }
+
     .cart-table {
-      margin-top: 6px;
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
       border: 1px solid #2c3e50;
       font-size: 12px;
+      margin-top: 4px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     body:not(.dark) .cart-table {
@@ -511,52 +675,51 @@
       background: rgba(0,0,0,0.03);
     }
 
-    .cart-empty {
+    .cart-drawer-footer {
+      margin-top: 8px;
       font-size: 12px;
       color: var(--text-muted);
-      padding: 6px 0;
     }
 
-    .totals-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-top: 8px;
-      font-size: 13px;
+    /* Confetti */
+    .confetti-piece {
+      position: fixed;
+      width: 8px;
+      height: 12px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 999;
+      animation: confetti-fall 900ms ease-out forwards;
     }
 
-    .totals-row strong {
-      font-size: 16px;
-    }
-
-    .totals-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .footer-note {
-      font-size: 11px;
-      margin-top: 4px;
-      color: var(--text-muted);
+    @keyframes confetti-fall {
+      0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) rotateZ(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--dx), 60px, 0) rotateZ(260deg);
+      }
     }
   </style>
 </head>
 <body class="dark">
 <div class="app">
 
+  <!-- HERO / PRODUCTO DESTACADO -->
   <div class="card hero">
     <header class="app-header">
       <div class="brand-block">
-        <div class="brand-name">Monte Alto</div>
-        <div class="brand-sub">Charcutería artesanal</div>
+        <div class="brand-name">MONTE ALTO</div>
+        <div class="brand-sub">CHARCUTERÍA ARTESANAL</div>
       </div>
-      <div class="mode-toggle" id="modeToggle">
-        <span class="icon" id="modeIcon">🌙</span>
-        <span id="modeLabel">Modo oscuro</span>
-      </div>
+      <button class="mode-btn" id="modeToggle" aria-label="Cambiar tema">
+        🌙
+      </button>
     </header>
 
-    <h1>Monte Alto – Calculadora</h1>
+    <h1>MONTE ALTO – CALCULADORA</h1>
     <div class="hero-main-title">Seleccioná tu chorizo</div>
     <div class="hero-subline">
       Elegí producto, gramaje y picante. Calculamos el total y los puntos.
@@ -567,7 +730,7 @@
       <div class="hero-image-wrap">
         <div class="hero-plate">
           <img id="heroImage"
-               src="TexMex.png"
+               src="Tex-Mex.png"
                alt="Producto Monte Alto">
         </div>
 
@@ -578,7 +741,7 @@
 
         <div class="hero-tag tag-right" id="heroTagRight">
           <span class="icon">🌶</span>
-          <span>Intensidad media</span>
+          <span>Picante medio</span>
         </div>
       </div>
 
@@ -587,7 +750,7 @@
         <div class="hero-product-name" id="heroProductName">Tex-Mex</div>
         <div class="hero-price-line" id="heroPrice">₡0 / kg</div>
         <div class="hero-tagline" id="productTagline">
-          Molienda fresca con especias tostadas y toque ahumado.
+          Molienda fresca con especias tostadas y un toque ahumado.
         </div>
 
         <div class="hero-meta-row">
@@ -599,6 +762,12 @@
         <div class="stock-warning" id="stockWarning" style="display:none;">
           Solo quedan X paquetes hoy.
         </div>
+
+        <!-- Botón de agregar cerca de la imagen (quick add) -->
+        <button class="btn btn-primary btn-hero-add" type="button" id="heroAddBtn">
+          <span class="icon">＋</span>
+          Agregar al carrito
+        </button>
       </div>
     </div>
   </div>
@@ -606,50 +775,19 @@
   <div class="top-row">
     <!-- Formulario + carrito -->
     <div class="card form-cart">
-      <div class="form-section-title">Datos del cliente</div>
-
-      <div class="last-order-banner" id="lastOrderBanner">
-        <span id="lastOrderText"></span>
-        <button type="button" id="repeatLastBtn">Repetir</button>
-      </div>
-
-      <div class="points-banner" id="pointsBanner">
-        <span id="pointsBannerText"></span>
-      </div>
-
-      <div class="inline-row">
-        <div class="field-group">
-          <label for="telefonoInput">Teléfono (WhatsApp)</label>
-          <input type="text" id="telefonoInput" placeholder="Ej: 6066-8322">
-          <small class="helper">
-            Usamos este número para tus puntos y el resumen del pedido.
-          </small>
-          <label class="checkbox-inline">
-            <input type="checkbox" id="rememberPhoneChk" checked>
-            <span>Recordar mi número en este dispositivo</span>
-          </label>
-        </div>
-        <div class="field-group">
-          <label for="nombreInput">Nombre</label>
-          <input type="text" id="nombreInput" placeholder="Tu nombre">
-        </div>
-      </div>
-
-      <div class="field-group">
-        <button class="btn btn-secondary" type="button" id="buscarClienteBtn">
-          <span class="icon">👀</span>
-          Buscar puntos y última compra
-        </button>
-      </div>
-
-      <hr style="border:none; border-top:1px solid #1b2838; margin:10px 0;">
-
+      <!-- SECCIÓN PEDIDO -->
       <div class="form-section-title">Pedido</div>
 
+      <div class="field-group">
+        <label for="productoSelect">Producto</label>
+        <select id="productoSelect"></select>
+      </div>
+
       <div class="inline-row">
         <div class="field-group">
-          <label for="productoSelect">Producto</label>
-          <select id="productoSelect"></select>
+          <label for="gramosInput">Gramos</label>
+          <input type="number" id="gramosInput" min="500" step="500" placeholder="">
+          <small class="helper">Se recomienda múltiplos de 500 g.</small>
         </div>
         <div class="field-group">
           <label for="picanteSelect">Picante</label>
@@ -661,46 +799,25 @@
         </div>
       </div>
 
-      <div class="inline-row">
-        <div class="field-group">
-          <label for="gramosInput">Gramos</label>
-          <input type="number" id="gramosInput" min="100" step="50" placeholder="Ej: 500">
-          <small class="helper">Podés escribir la cantidad que necesités.</small>
-        </div>
-        <div class="field-group">
-          <label>&nbsp;</label>
-          <button class="btn btn-primary btn-block" type="button" id="addToCartBtn">
-            <span class="icon">＋</span>
-            Agregar al carrito
-          </button>
-        </div>
-      </div>
-
       <div class="field-group">
         <label for="comentariosInput">Notas / comentarios</label>
-        <textarea id="comentariosInput" placeholder="Ej: cortar en rodajas, separar en paquetes de 500 g, etc."></textarea>
-        <small class="helper">
-          Si necesitás el pedido con urgencia o para una fecha específica, escribilo aquí.
-        </small>
+        <textarea id="comentariosInput"
+                  placeholder="Ej: cortar en rodajas, separar en paquetes, entrega urgente, etc."></textarea>
       </div>
 
-      <div class="form-section-title">Carrito</div>
-      <div id="cartContainer">
-        <div class="cart-empty" id="cartEmptyMsg">Aún no has agregado productos.</div>
-        <div class="cart-table" id="cartTableWrapper" style="display:none;">
-          <table>
-            <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Gramos</th>
-              <th>Picante</th>
-              <th>Total</th>
-              <th></th>
-            </tr>
-            </thead>
-            <tbody id="cartTableBody"></tbody>
-          </table>
-        </div>
+      <!-- Botón agregar al carrito (después de notas) -->
+      <div class="field-group">
+        <button class="btn btn-primary btn-block" type="button" id="addToCartBtn">
+          <span class="icon">＋</span>
+          Agregar al carrito
+        </button>
+      </div>
+
+      <!-- Barra de carrito + drawer -->
+      <div class="cart-bar" id="cartBar">
+        <span>Ver carrito</span>
+        <span class="cart-count-badge" id="cartCountBadge">0 ítems</span>
+        <button class="cart-icon-btn" type="button" id="cartIconBtn">🛒</button>
       </div>
 
       <div class="totals-row">
@@ -714,19 +831,80 @@
         </div>
       </div>
 
+      <div class="footer-note">
+        Tus descuentos NO reducen los puntos que ganás. Tus puntos siempre se calculan con el total original.
+      </div>
+
+      <hr class="separator">
+
+      <!-- SECCIÓN DATOS DEL CLIENTE -->
+      <div class="form-section-title">Datos del cliente</div>
+
+      <div class="field-group">
+        <label for="telefonoInput">Teléfono (WhatsApp)</label>
+        <input type="text" id="telefonoInput" placeholder="">
+        <small class="helper">
+          Usamos este número para tus puntos y para confirmar el pedido.
+        </small>
+        <label class="checkbox-inline">
+          <input type="checkbox" id="rememberPhoneChk" checked>
+          <span>Recordar mi número en este dispositivo</span>
+        </label>
+      </div>
+
+      <div class="field-group">
+        <label for="nombreInput">Nombre</label>
+        <input type="text" id="nombreInput" placeholder="Tu nombre">
+      </div>
+
+      <div class="last-order-banner" id="lastOrderBanner">
+        <span id="lastOrderText"></span>
+        <button type="button" id="repeatLastBtn">Repetir</button>
+      </div>
+
+      <div class="points-banner" id="pointsBanner">
+        <span id="pointsBannerText"></span>
+      </div>
+
       <div style="margin-top:10px;">
-        <button class="btn btn-primary btn-block" type="button" id="enviarPedidoBtn">
+        <button class="btn btn-cta btn-block" type="button" id="enviarPedidoBtn">
           <span class="icon">🛒</span>
           Enviar pedido
         </button>
       </div>
-
-      <div class="footer-note">
-        Tus descuentos NO reducen los puntos que ganás. Tus puntos siempre se calculan con el total original.
-      </div>
     </div>
   </div>
 
+  <!-- Drawer del carrito -->
+  <div class="cart-drawer-overlay" id="cartDrawerOverlay">
+    <div class="cart-drawer" id="cartDrawer">
+      <div class="cart-drawer-header">
+        <h3>Tu carrito</h3>
+        <button class="cart-close-btn" type="button" id="cartCloseBtn">✕</button>
+      </div>
+
+      <div id="cartEmptyMsg" class="cart-empty">Aún no has agregado productos.</div>
+
+      <div class="cart-table" id="cartTableWrapper" style="display:none;">
+        <table>
+          <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Gramos</th>
+            <th>Picante</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="cartTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="cart-drawer-footer">
+        Revisá tu pedido antes de enviarlo. Podés cerrar esta ventana para seguir editando.
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -850,6 +1028,36 @@
     return Math.round(prod.precioKg * (g / 1000));
   }
 
+  function vibrar(ms = 80) {
+    try {
+      if (navigator.vibrate) navigator.vibrate(ms);
+    } catch (e) {
+      // no pasa nada si falla
+    }
+  }
+
+  function lanzarConfettiDesdeElemento(el) {
+    const rect = el.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top;
+
+    const colores = ["#f4ff3b", "#ffb300", "#4caf50", "#ff7043", "#29b6f6"];
+    const cantidad = 28;
+
+    for (let i = 0; i < cantidad; i++) {
+      const div = document.createElement("div");
+      div.className = "confetti-piece";
+      const color = colores[Math.floor(Math.random() * colores.length)];
+      div.style.background = color;
+      div.style.left = (x + (Math.random() * 80 - 40)) + "px";
+      div.style.top = (y + (Math.random() * 10 - 5)) + "px";
+      const dx = (Math.random() * 80 - 40) + "px";
+      div.style.setProperty("--dx", dx);
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 950);
+    }
+  }
+
   // =============================
   // REFERENCIAS DOM
   // =============================
@@ -865,21 +1073,31 @@
   const heroTagLeft = document.getElementById("heroTagLeft");
   const heroTagRight = document.getElementById("heroTagRight");
   const stockWarningEl = document.getElementById("stockWarning");
+
   const totalDisplay = document.getElementById("totalDisplay");
   const pointsDisplay = document.getElementById("pointsDisplay");
-  const cartEmptyMsg = document.getElementById("cartEmptyMsg");
-  const cartTableWrapper = document.getElementById("cartTableWrapper");
-  const cartTableBody = document.getElementById("cartTableBody");
   const pointsBanner = document.getElementById("pointsBanner");
   const pointsBannerText = document.getElementById("pointsBannerText");
   const lastOrderBanner = document.getElementById("lastOrderBanner");
   const lastOrderText = document.getElementById("lastOrderText");
+
   const telefonoInput = document.getElementById("telefonoInput");
   const nombreInput = document.getElementById("nombreInput");
   const rememberPhoneChk = document.getElementById("rememberPhoneChk");
 
+  const cartDrawerOverlay = document.getElementById("cartDrawerOverlay");
+  const cartDrawer = document.getElementById("cartDrawer");
+  const cartTableWrapper = document.getElementById("cartTableWrapper");
+  const cartTableBody = document.getElementById("cartTableBody");
+  const cartEmptyMsg = document.getElementById("cartEmptyMsg");
+  const cartCountBadge = document.getElementById("cartCountBadge");
+  const cartIconBtn = document.getElementById("cartIconBtn");
+  const cartBar = document.getElementById("cartBar");
+
+  const modeToggle = document.getElementById("modeToggle");
+
   // =============================
-  // PRODUCTOS
+  // PRODUCTOS / HERO
   // =============================
   function initProductos() {
     productoSelect.innerHTML = "";
@@ -912,7 +1130,7 @@
     } else {
       heroPrice.textContent = formatoColones(prod.precioKg) + " / kg";
       heroBaseGramEl.textContent = "Sugerido: 500 g";
-      if (gramosInput.disabled) gramosInput.disabled = false;
+      gramosInput.disabled = false;
       if (!gramosInput.value) gramosInput.value = 500;
     }
 
@@ -954,7 +1172,7 @@
     if (prod.esCombo) gramos = 2500;
 
     if (gramos <= 0) {
-      alert("Indicá los gramos que necesitás.");
+      alert("Indicá los gramos que necesitás (múltiplos de 500 g).");
       return;
     }
 
@@ -972,8 +1190,9 @@
 
     renderCart();
 
-    gramosInput.value = prod.esCombo ? 2500 : "";
+    if (!prod.esCombo) gramosInput.value = 500;
     picanteSelect.value = "";
+    picanteSelect.classList.remove("picante-hot");
 
     mostrarUpsell(prodId);
   }
@@ -1016,7 +1235,10 @@
   }
 
   function renderCart() {
-    if (!cart.length) {
+    const cantidad = cart.length;
+    cartCountBadge.textContent = cantidad + (cantidad === 1 ? " ítem" : " ítems");
+
+    if (!cantidad) {
       cartEmptyMsg.style.display = "block";
       cartTableWrapper.style.display = "none";
     } else {
@@ -1069,7 +1291,35 @@
     pointsDisplay.textContent = puntos;
   }
 
-  document.getElementById("addToCartBtn").addEventListener("click", addToCart);
+  document.getElementById("addToCartBtn").addEventListener("click", () => {
+    addToCart();
+  });
+
+  document.getElementById("heroAddBtn").addEventListener("click", () => {
+    addToCart();
+  });
+
+  // Drawer open/close
+  function abrirDrawer() {
+    cartDrawerOverlay.classList.add("open");
+    cartDrawer.classList.add("open");
+  }
+
+  function cerrarDrawer() {
+    cartDrawer.classList.remove("open");
+    setTimeout(() => cartDrawerOverlay.classList.remove("open"), 200);
+  }
+
+  cartIconBtn.addEventListener("click", abrirDrawer);
+  cartBar.addEventListener("click", (e) => {
+    if (e.target === cartIconBtn) return;
+    abrirDrawer();
+  });
+
+  document.getElementById("cartCloseBtn").addEventListener("click", cerrarDrawer);
+  cartDrawerOverlay.addEventListener("click", (e) => {
+    if (e.target === cartDrawerOverlay) cerrarDrawer();
+  });
 
   // =============================
   // PUNTOS / CLIENTE
@@ -1077,7 +1327,6 @@
   function hacerLookupCliente(telNormalizado) {
     if (!telNormalizado || telNormalizado.length !== 8) return;
 
-    // Evitar repetir la misma consulta innecesariamente
     if (state.lastLookupTel === telNormalizado) return;
     state.lastLookupTel = telNormalizado;
     state.telefono = telNormalizado;
@@ -1092,19 +1341,10 @@
       }
     }
 
-    // TODO: sustituir esta simulación por fetch a APPS_SCRIPT_URL
+    // Aquí deberíamos hacer fetch a APPS_SCRIPT_URL.
+    // Mientras tanto, simulamos la respuesta:
     simularConsultaCliente(telNormalizado);
   }
-
-  document.getElementById("buscarClienteBtn").addEventListener("click", () => {
-    const telNorm = normalizePhone(telefonoInput.value);
-    telefonoInput.value = telNorm;
-    if (!telNorm || telNorm.length !== 8) {
-      alert("Indicá un número de 8 dígitos.");
-      return;
-    }
-    hacerLookupCliente(telNorm);
-  });
 
   function simularConsultaCliente(tel) {
     if (tel.endsWith("22")) {
@@ -1128,7 +1368,7 @@
     if (state.puntos > 0) {
       pointsBannerText.innerHTML =
         `Tenés <strong>${state.puntos} puntos</strong> acumulados. ` +
-        `Cada ₡${CONFIG.colonesPorPunto.toLocaleString("es-CR")} suma 1 punto.`;
+        `1 punto por cada ₡${CONFIG.colonesPorPunto.toLocaleString("es-CR")}.`;
       pointsBanner.style.display = "block";
     } else {
       pointsBannerText.textContent =
@@ -1144,13 +1384,15 @@
     }
     lastOrderText.textContent =
       `La última vez compraste ${state.lastOrderSummary}. ¿Querés repetir algo similar?`;
-    lastOrderBanner.style.display = "block";
+    lastOrderBanner.style.display = "flex";
   }
 
-  document.getElementById("repeatLastBtn").addEventListener("click", () => {
+  document.getElementById("repeatLastBtn").addEventListener("click", (e) => {
     if (!state.lastOrderItems || !Array.isArray(state.lastOrderItems)) return;
     cart = state.lastOrderItems.map(item => ({ ...item }));
     renderCart();
+    vibrar(90);
+    lanzarConfettiDesdeElemento(e.currentTarget);
     alert("Listo, cargamos un pedido similar al de la vez pasada. Podés ajustarlo antes de enviar.");
   });
 
@@ -1169,7 +1411,7 @@
   // =============================
   // ENVIAR PEDIDO
   // =============================
-  document.getElementById("enviarPedidoBtn").addEventListener("click", () => {
+  document.getElementById("enviarPedidoBtn").addEventListener("click", (e) => {
     if (!cart.length) {
       alert("Agregá al menos un producto al carrito antes de enviar.");
       return;
@@ -1181,7 +1423,7 @@
     const tel = telNorm;
     const nom = nombreInput.value.trim();
     if (!tel || tel.length !== 8 || !nom) {
-      alert("Indicá tu teléfono (8 dígitos) y nombre antes de enviar el pedido.");
+      alert("Indicá tu teléfono (8 dígitos) y tu nombre antes de enviar el pedido.");
       return;
     }
 
@@ -1206,30 +1448,24 @@
 
     console.log("Mensaje de pedido:", mensaje);
 
-    // TODO:
-    // 1) Hacer fetch a APPS_SCRIPT_URL con method:"POST" y payload JSON.
-    // 2) (Opcional) Abrir WhatsApp con este mensaje.
+    vibrar(100);
+    lanzarConfettiDesdeElemento(e.currentTarget);
 
+    // TODO: reemplazar alerta por fetch + WhatsApp como en la calculadora live
     alert("Simulación de envío:\n\n" + mensaje);
   });
 
   // =============================
   // MODO CLARO/OSCURO
   // =============================
-  const modeToggle = document.getElementById("modeToggle");
-  const modeIcon = document.getElementById("modeIcon");
-  const modeLabel = document.getElementById("modeLabel");
-
   function aplicarTema(desired) {
     const tema = desired || localStorage.getItem("ma_theme") || "dark";
     if (tema === "dark") {
       document.body.classList.add("dark");
-      modeIcon.textContent = "🌙";
-      modeLabel.textContent = "Modo oscuro";
+      modeToggle.textContent = "🌙";
     } else {
       document.body.classList.remove("dark");
-      modeIcon.textContent = "☀";
-      modeLabel.textContent = "Modo claro";
+      modeToggle.textContent = "☀";
     }
     try {
       localStorage.setItem("ma_theme", tema);
@@ -1241,6 +1477,15 @@
   modeToggle.addEventListener("click", () => {
     const esDark = document.body.classList.contains("dark");
     aplicarTema(esDark ? "light" : "dark");
+  });
+
+  // Picante select estilo naranja cuando es picante
+  picanteSelect.addEventListener("change", () => {
+    if (picanteSelect.value === "si") {
+      picanteSelect.classList.add("picante-hot");
+    } else {
+      picanteSelect.classList.remove("picante-hot");
+    }
   });
 
   // =============================
