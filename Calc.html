@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>6:05 Monte Alto – Calculadora (Lab Carrusel)</title>
+  <title>6.20 Monte Alto – Calculadora (Lab Carrusel)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -146,7 +146,7 @@
 
     .carousel-viewport {
       position: relative;
-      overflow: visible;
+      overflow: hidden;
       padding: 6px 0;
     }
 
@@ -156,7 +156,7 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 32px;
+      width: 24px;
       pointer-events: none;
       z-index: 3;
     }
@@ -196,13 +196,13 @@
 
     .carousel-track {
       display: flex;
-      gap: 14px;
+      gap: 0;
       transition: transform 0.45s ease;
       will-change: transform;
     }
 
     .slide {
-      flex: 0 0 78%;
+      flex: 0 0 100%;
       border-radius: 28px;
       background: radial-gradient(circle at top, #f6e1c8 0, #d9a66b 60%, #b6793e 100%);
       height: 160px;
@@ -214,8 +214,8 @@
         transform 0.35s ease,
         opacity 0.35s ease,
         box-shadow 0.35s ease;
-      opacity: 0.25;
-      transform: scale(0.9);
+      opacity: 0.4;
+      transform: scale(0.97);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -225,12 +225,6 @@
       opacity: 1;
       transform: scale(1);
       box-shadow: 0 24px 52px rgba(0,0,0,0.6);
-    }
-
-    .slide.prev,
-    .slide.next {
-      opacity: 0.6;
-      transform: scale(0.95);
     }
 
     .slide img {
@@ -489,6 +483,13 @@
       appearance: none;
     }
 
+    /* Picante = Sí -> naranja de advertencia */
+    .field-select.spicy-yes {
+      background: #7b2e14;
+      color: #ffeede;
+      font-weight: 600;
+    }
+
     .field-notes {
       resize: vertical;
       min-height: 40px;
@@ -654,7 +655,7 @@
         <span>₡0</span>
       </div>
       <button class="btn-primary" id="addBtn">
-        <span>Agregar al carrito (producto actual)</span>
+        <span>Ver carrito / ir a pagar (demo)</span>
         <span class="icon">＋</span>
       </button>
       <div class="points-row">
@@ -774,7 +775,6 @@
 
   let currentIndex = 0;
   let slides = [];
-  const gapPx = 14;
   const gramosBase = 500;
   const colonesPorPunto = 100;
 
@@ -782,7 +782,7 @@
 
   // estado de panel por producto
   const selectionState = {};
-  let expandedId = null;
+  let expandedId = null; // por defecto escondido
 
   function getSelection(prodId) {
     if (!selectionState[prodId]) {
@@ -822,11 +822,9 @@
 
       slide.addEventListener("click", () => {
         const index = Number(slide.dataset.index);
-        if (index !== currentIndex) {
-          currentIndex = index;
-          expandedId = PRODUCTS[index].id;
-          updateUI();
-        }
+        currentIndex = index;
+        expandedId = PRODUCTS[index].id;
+        updateUI();
       });
 
       track.appendChild(slide);
@@ -848,14 +846,10 @@
   }
 
   function updateCarouselClasses() {
-    slides.forEach(s => s.classList.remove("active","prev","next"));
-    const total = slides.length;
-    const prevIdx = (currentIndex - 1 + total) % total;
-    const nextIdx = (currentIndex + 1) % total;
-
-    slides[currentIndex].classList.add("active");
-    slides[prevIdx].classList.add("prev");
-    slides[nextIdx].classList.add("next");
+    slides.forEach(s => s.classList.remove("active"));
+    if (slides[currentIndex]) {
+      slides[currentIndex].classList.add("active");
+    }
   }
 
   function updateDots() {
@@ -870,16 +864,21 @@
 
     const first = slides[0];
     const slideWidth = first.getBoundingClientRect().width;
-    const viewport = document.querySelector(".carousel-viewport");
-    const viewportWidth = viewport.getBoundingClientRect().width;
-
-    const extra = (viewportWidth - slideWidth) / 2;
-    const offset = currentIndex * (slideWidth + gapPx) - extra;
+    const offset = currentIndex * slideWidth;
 
     track.style.transform = `translateX(-${offset}px)`;
   }
 
   /* ----- LISTA INFERIOR + PANEL ----- */
+
+  function applyPicanteStyle(selectEl) {
+    if (!selectEl) return;
+    if (selectEl.value === "Sí") {
+      selectEl.classList.add("spicy-yes");
+    } else {
+      selectEl.classList.remove("spicy-yes");
+    }
+  }
 
   function renderProductList() {
     PRODUCT_LIST.innerHTML = "";
@@ -947,7 +946,7 @@
             </div>
             <div class="field-block">
               <div class="field-label">Picante</div>
-              <select class="field-select" data-field="picante">
+              <select class="field-select${state.picante === "Sí" ? " spicy-yes" : ""}" data-field="picante">
                 <option value="No"${state.picante === "No" ? " selected" : ""}>No</option>
                 <option value="Sí"${state.picante === "Sí" ? " selected" : ""}>Sí</option>
               </select>
@@ -956,7 +955,7 @@
           <div class="field-block">
             <div class="field-label">Notas</div>
             <textarea class="field-notes"
-                      placeholder="Ej: Para parrilla del sábado, sin tanto picante"
+                      placeholder="Pedido urgente"
                       data-field="notas">${state.notas}</textarea>
           </div>
           <div class="details-footer">
@@ -980,7 +979,10 @@
 
         picanteSelect.addEventListener("change", (e) => {
           state.picante = e.target.value;
+          applyPicanteStyle(e.target);
         });
+        // asegurar estilo inicial
+        applyPicanteStyle(picanteSelect);
 
         notasArea.addEventListener("input", (e) => {
           state.notas = e.target.value;
@@ -1042,10 +1044,9 @@
     console.log("Carrito (demo):", cart);
   }
 
-  // botón grande inferior: agrega usando peso base (500 g) al producto actual
+  // botón grande inferior (por ahora solo loguea, no abre vista nueva real)
   ADD_BTN.addEventListener("click", () => {
-    const prod = PRODUCTS[currentIndex];
-    addToCart(prod, { peso: gramosBase, picante: "No", notas: "" });
+    console.log("Ver carrito / ir a pagar (demo). Carrito actual:", cart);
   });
 
   /* ----- CONTROL FLECHAS, MODO Y RESIZE ----- */
@@ -1084,7 +1085,6 @@
 
   // inicialización
   createSlides();
-  expandedId = PRODUCTS[0].id;   // abre el primero por defecto
   updateUI();
   updateCartRow();
 </script>
