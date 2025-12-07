@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>6.30 Monte Alto – Calculadora (Lab Carrusel)</title>
+  <title>10 pmMonte Alto – Calculadora (Lab Carrusel)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -10,12 +10,8 @@
       --bg-card-top: #191c24;
       --bg-card-bottom: #11131a;
       --accent: #ffd54a;
-      --accent-soft: #ffe089;
       --text-main: #f7f5ff;
       --text-muted: #9a9fb5;
-      --pill-bg: #262936;
-      --radius-xl: 28px;
-      --radius-lg: 20px;
       --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
       --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
         "Roboto", sans-serif;
@@ -37,25 +33,6 @@
       color: var(--text-main);
     }
 
-    /* Modo claro básico */
-    body.light-mode {
-      background: radial-gradient(circle at top, #fdf9f0 0, #e1dacb 60%);
-    }
-    body.light-mode .card-top {
-      background: #fdf9f0;
-      color: #1b1b1f;
-    }
-    body.light-mode .card-bottom {
-      background: #141417;
-    }
-    body.light-mode .hero-name {
-      color: #141417;
-    }
-    body.light-mode .hero-desc,
-    body.light-mode .hero-meta-row span {
-      color: #77757f;
-    }
-
     .app {
       width: 100%;
       max-width: 420px;
@@ -75,28 +52,6 @@
       position: relative;
       z-index: 2;
       color: var(--text-main);
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      margin-bottom: 8px;
-    }
-
-    .mode-toggle {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      border: none;
-      background: #262938;
-      color: #f7f5ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
-      font-size: 17px;
     }
 
     .title-section {
@@ -124,12 +79,16 @@
       font-weight: 700;
       line-height: 1.1;
       color: #fdfdfd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;  /* una sola línea */
     }
 
     .hero-price {
       font-size: 16px;
       font-weight: 700;
       color: #f7b94a;
+      white-space: nowrap;
     }
 
     .hero-sub {
@@ -179,21 +138,6 @@
       );
     }
 
-    body.light-mode .carousel-viewport::before {
-      background: linear-gradient(
-        to right,
-        rgba(253,249,240,1) 0%,
-        rgba(253,249,240,0) 100%
-      );
-    }
-    body.light-mode .carousel-viewport::after {
-      background: linear-gradient(
-        to left,
-        rgba(253,249,240,1) 0%,
-        rgba(253,249,240,0) 100%
-      );
-    }
-
     .carousel-track {
       display: flex;
       gap: 0;
@@ -234,33 +178,49 @@
       transform: translateY(4px);
     }
 
-    .slide-label {
+    /* Pastillas sobre la imagen */
+
+    .slide-pill {
       position: absolute;
-      left: 10px;
-      top: 10px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: rgba(10,10,10,0.82);
-      font-size: 11px;
-      color: #f7f5ff;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: #1f3248;
+      color: #f7f5ff;
+      font-size: 11px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.45);
+      z-index: 5;
+      white-space: nowrap;
     }
 
-    .slide-label span.badge {
-      width: 16px;
-      height: 16px;
+    .slide-pill-top {
+      left: 10px;
+      top: 10px;
+    }
+
+    .slide-pill-bottom {
+      right: 10px;
+      bottom: 10px;
+    }
+
+    .pill-icon {
+      width: 18px;
+      height: 18px;
       border-radius: 999px;
-      background: #ffcf6f;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      color: #3a2b12;
+      font-size: 11px;
+      background: #24364a;
+      color: #f7f5ff;
     }
 
-    /* Flechas encima del carrusel */
+    .pill-icon-fav {
+      background: #37c875;
+      color: #07341e;
+    }
 
     .arrow-btn {
       position: absolute;
@@ -404,6 +364,9 @@
     .product-name {
       font-size: 13px;
       font-weight: 600;
+      white-space: nowrap;   /* una sola línea */
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .product-desc {
@@ -742,10 +705,6 @@
 <body>
 <div class="app">
   <div class="card-top">
-    <header>
-      <button class="mode-toggle" id="modeToggle" title="Modo claro/oscuro">🌙</button>
-    </header>
-
     <div class="title-section">
       <h1>Monte Alto – Calculadora</h1>
       <div class="hero-name-row">
@@ -832,84 +791,91 @@
       nombre: "Tex-Mex",
       precioKg: 8500,
       favorito: true,
-      picanteIcon: "🌶🌶",
+      featureIcon: "🔥",
+      featureText: "Picante medio",
       tagline: "Chorizo artesanal picante",
       descHero: "Molienda fresca con especias tostadas y un toque ahumado.",
       descCorta: "Especiado, ahumado y ligeramente picante.",
       rinde: "Rinde 3–4 porciones",
-      img: "Tex-Mex.png"
+      img: "Tex-Mex-02.png"
     },
     {
       id: "caribeno",
       nombre: "Caribeño",
       precioKg: 8700,
-      favorito: false,
-      picanteIcon: "🌶",
+      favorito: true,
+      featureIcon: "🥥",
+      featureText: "Coco + chile panameño",
       tagline: "Coco natural + chile panameño",
       descHero: "Ajo fresco, coco natural y chile panameño estilo costero.",
       descCorta: "Toque caribeño con coco y chile panameño.",
       rinde: "Perfecto para 3 platos",
-      img: "Caribeño.png"
+      img: "Caribeño-02.png"
     },
     {
       id: "tico",
       nombre: "Tico Casero",
       precioKg: 8300,
-      favorito: true,
-      picanteIcon: "🇨🇷",
+      favorito: false,
+      featureIcon: "🇨🇷",
+      featureText: "Tico tradicional",
       tagline: "Achiote, ajo y tradición local",
       descHero: "Receta casera con achiote, ajo fresco y especias ticas.",
       descCorta: "Sabor tico clásico para desayuno y choripán.",
       rinde: "Ideal para desayunos y choripanes",
-      img: "Criollo.png"
+      img: "Criollo-02.png"
     },
     {
       id: "argentino",
       nombre: "Criollo Argentino",
       precioKg: 8300,
-      favorito: true,
-      picanteIcon: "🥩",
+      favorito: false,
+      featureIcon: "🥩",
+      featureText: "Posta + panceta",
       tagline: "Clásico para parrilla",
       descHero: "Posta y panceta en equilibrio, sabor limpio y jugoso.",
       descCorta: "Clásico parrillero, mezcla de posta y panceta.",
       rinde: "Ideal para la parrilla",
-      img: "Argentino.png"
+      img: "Argentino-02.png"
     },
     {
       id: "bratwurst",
       nombre: "Bratwurst",
       precioKg: 8900,
       favorito: false,
-      picanteIcon: "🥨",
+      featureIcon: "🇩🇪",
+      featureText: "Estilo alemán",
       tagline: "Suave, mantecoso, estilo alemán",
       descHero: "Suave, jugoso, perfecto para hot dogs premium.",
       descCorta: "Suave estilo alemán para panes.",
       rinde: "Para 3–4 panes",
-      img: "Bratwurst.png"
+      img: "Bratwurst-02.png"
     },
     {
       id: "tocineta",
       nombre: "Tocineta Ahumada",
       precioKg: 10000,
-      favorito: false,
-      picanteIcon: "🥓",
+      favorito: true,
+      featureIcon: "🥓",
+      featureText: "Ahumado lento",
       tagline: "Laminada, ahumada en frío",
       descHero: "Tocineta ahumada lentamente, ideal para desayunos y burgers.",
       descCorta: "Láminas ahumadas para todo.",
       rinde: "Rinde varias preparaciones",
-      img: "Tocineta.png"
+      img: "Tocineta-02.png"
     },
     {
       id: "combo",
       nombre: "Combo surtido Monte Alto",
       precioKg: 0,
-      favorito: true,
-      picanteIcon: "⭐",
+      favorito: false,
+      featureIcon: "🌟",
+      featureText: "Serás la estrella de la fiesta",
       tagline: "500 g de cada chorizo",
       descHero: "Degustación completa: 500 g de cada chorizo Monte Alto.",
       descCorta: "Pack de 2.5 kg para compartir.",
       rinde: "Ideal para parrilladas y regalos",
-      img: "Combo.png"
+      img: "Combo-02.png"
     }
   ];
 
@@ -929,7 +895,6 @@
   const POINTS_DISPLAY = document.getElementById("pointsDisplay");
   const ADD_BTN = document.getElementById("addBtn");
   const CART_ROW = document.getElementById("cartRow");
-  const MODE_TOGGLE = document.getElementById("modeToggle");
 
   const CART_MODAL = document.getElementById("cartModal");
   const CART_ITEMS = document.getElementById("cartItems");
@@ -943,8 +908,6 @@
   const colonesPorPunto = 100;
 
   const cart = [];
-
-  // estado de panel por producto
   const selectionState = {};
   let expandedId = null; // por defecto escondido
 
@@ -1012,11 +975,22 @@
       slide.className = "slide";
       slide.dataset.index = idx.toString();
 
+      const favPill = p.favorito
+        ? `<div class="slide-pill slide-pill-top">
+             <span class="pill-icon pill-icon-fav">★</span>
+             <span>Favorito de la casa</span>
+           </div>`
+        : "";
+
+      const featurePill = `
+        <div class="slide-pill slide-pill-bottom">
+          <span class="pill-icon">${p.featureIcon}</span>
+          <span>${p.featureText}</span>
+        </div>`;
+
       slide.innerHTML = `
-        <span class="slide-label">
-          <span class="badge">${p.picanteIcon || "★"}</span>
-          ${p.favorito ? "Favorito" : "Monte Alto"}
-        </span>
+        ${favPill}
+        ${featurePill}
         <img src="${p.img}" alt="${p.nombre}">
       `;
 
@@ -1038,7 +1012,7 @@
       d.dataset.index = idx.toString();
       d.addEventListener("click", () => {
         currentIndex = idx;
-        expandedId = null; // solo navegar, no abrir panel
+        expandedId = null; // solo navegar, sin panel
         updateUI();
       });
       dotsContainer.appendChild(d);
@@ -1061,11 +1035,9 @@
 
   function updateTrackPosition() {
     if (!slides.length) return;
-
     const first = slides[0];
     const slideWidth = first.getBoundingClientRect().width;
     const offset = currentIndex * slideWidth;
-
     track.style.transform = `translateX(-${offset}px)`;
   }
 
@@ -1166,7 +1138,6 @@
           </div>
         `;
 
-        // listeners de campos
         const pesoInput = panel.querySelector('[data-field="peso"]');
         const picanteSelect = panel.querySelector('[data-field="picante"]');
         const notasArea = panel.querySelector('[data-field="notas"]');
@@ -1307,28 +1278,22 @@
     }
   });
 
-  /* ----- CONTROL FLECHAS, MODO Y RESIZE ----- */
+  /* ----- CONTROL FLECHAS Y RESIZE ----- */
 
   prevBtn.addEventListener("click", () => {
     currentIndex = (currentIndex - 1 + PRODUCTS.length) % PRODUCTS.length;
-    expandedId = null; // navegar solo, sin abrir panel
+    expandedId = null; // al navegar, panel se esconde
     updateUI();
   });
 
   nextBtn.addEventListener("click", () => {
     currentIndex = (currentIndex + 1) % PRODUCTS.length;
-    expandedId = null; // navegar solo, sin abrir panel
+    expandedId = null;
     updateUI();
   });
 
   window.addEventListener("resize", () => {
     updateTrackPosition();
-  });
-
-  MODE_TOGGLE.addEventListener("click", () => {
-    document.body.classList.toggle("light-mode");
-    const isLight = document.body.classList.contains("light-mode");
-    MODE_TOGGLE.textContent = isLight ? "☀" : "🌙";
   });
 
   /* ----- ORQUESTA FINAL ----- */
