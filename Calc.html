@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>6.20 Monte Alto – Calculadora (Lab Carrusel)</title>
+  <title>6.30 Monte Alto – Calculadora (Lab Carrusel)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -515,6 +515,8 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      position: relative;
+      overflow: visible;
     }
 
     .btn-mini-add span.icon {
@@ -597,6 +599,144 @@
         font-size: 21px;
       }
     }
+
+    /* Confetti */
+
+    .confetti-container {
+      position: fixed;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 4px;
+      height: 8px;
+      opacity: 0;
+      border-radius: 1px;
+      animation: confetti-fall 700ms ease-out forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translate(0,0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+        opacity: 0;
+      }
+    }
+
+    /* Modal carrito */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 9000;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-panel {
+      width: 100%;
+      max-width: 420px;
+      background: #11131a;
+      border-radius: 20px 20px 0 0;
+      padding: 16px 18px 18px;
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.8);
+      color: #f7f5ff;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .modal-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      border: none;
+      border-radius: 999px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #262938;
+      color: #f7f5ff;
+      cursor: pointer;
+    }
+
+    .cart-items {
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 6px;
+      margin-bottom: 8px;
+    }
+
+    .cart-item-row {
+      font-size: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cart-item-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-item-name {
+      font-weight: 600;
+    }
+
+    .cart-item-notes {
+      font-size: 11px;
+      color: #b6b0cf;
+    }
+
+    .modal-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .modal-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-btn-ok {
+      margin-top: 4px;
+      border: none;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #111;
+      cursor: pointer;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
@@ -655,13 +795,31 @@
         <span>₡0</span>
       </div>
       <button class="btn-primary" id="addBtn">
-        <span>Ver carrito / ir a pagar (demo)</span>
+        <span>Revisar orden</span>
         <span class="icon">＋</span>
       </button>
       <div class="points-row">
-        <span>Puntos por esta compra:</span>
+        <span>Puntos acumulables por esta compra:</span>
         <span class="highlight" id="pointsDisplay">0 pts</span>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal carrito -->
+<div id="cartModal" class="modal-backdrop">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h3>Tu orden</h3>
+      <button class="modal-close" id="cartCloseBtn">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="modal-footer">
+      <div class="modal-footer-row">
+        <span>Total:</span>
+        <strong id="cartTotal">₡0</strong>
+      </div>
+      <button class="modal-btn-ok" id="cartOkBtn">Cerrar</button>
     </div>
   </div>
 </div>
@@ -773,6 +931,12 @@
   const CART_ROW = document.getElementById("cartRow");
   const MODE_TOGGLE = document.getElementById("modeToggle");
 
+  const CART_MODAL = document.getElementById("cartModal");
+  const CART_ITEMS = document.getElementById("cartItems");
+  const CART_TOTAL = document.getElementById("cartTotal");
+  const CART_CLOSE_BTN = document.getElementById("cartCloseBtn");
+  const CART_OK_BTN = document.getElementById("cartOkBtn");
+
   let currentIndex = 0;
   let slides = [];
   const gramosBase = 500;
@@ -804,6 +968,42 @@
     return Math.round(prod.precioKg * (gramos / 1000));
   }
 
+  /* ----- CONFETTI ----- */
+
+  function triggerConfettiFromElement(el) {
+    const rect = el.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    const container = document.createElement("div");
+    container.className = "confetti-container";
+    container.style.left = "0px";
+    container.style.top = "0px";
+
+    const colors = ["#ffd54a", "#ff8a65", "#4dd0e1", "#ce93d8", "#81c784"];
+
+    const pieces = 24;
+    for (let i = 0; i < pieces; i++) {
+      const piece = document.createElement("div");
+      piece.className = "confetti-piece";
+      piece.style.backgroundColor = colors[i % colors.length];
+      const dx = (Math.random() * 140 - 70) + "px";
+      const dy = (Math.random() * -120 - 40) + "px";
+      const rot = (Math.random() * 360) + "deg";
+      piece.style.setProperty("--dx", dx);
+      piece.style.setProperty("--dy", dy);
+      piece.style.setProperty("--rot", rot);
+      piece.style.left = x + "px";
+      piece.style.top = y + "px";
+      container.appendChild(piece);
+    }
+
+    document.body.appendChild(container);
+    setTimeout(() => {
+      container.remove();
+    }, 800);
+  }
+
   /* ----- CARRUSEL ----- */
 
   function createSlides() {
@@ -823,7 +1023,7 @@
       slide.addEventListener("click", () => {
         const index = Number(slide.dataset.index);
         currentIndex = index;
-        expandedId = PRODUCTS[index].id;
+        expandedId = PRODUCTS[index].id; // abrir panel al tocar la imagen
         updateUI();
       });
 
@@ -838,7 +1038,7 @@
       d.dataset.index = idx.toString();
       d.addEventListener("click", () => {
         currentIndex = idx;
-        expandedId = PRODUCTS[idx].id;
+        expandedId = null; // solo navegar, no abrir panel
         updateUI();
       });
       dotsContainer.appendChild(d);
@@ -981,7 +1181,6 @@
           state.picante = e.target.value;
           applyPicanteStyle(e.target);
         });
-        // asegurar estilo inicial
         applyPicanteStyle(picanteSelect);
 
         notasArea.addEventListener("input", (e) => {
@@ -991,6 +1190,7 @@
         miniBtn.addEventListener("click", (e) => {
           e.stopPropagation();
           addToCart(prod, state);
+          triggerConfettiFromElement(miniBtn);
         });
 
         PRODUCT_LIST.appendChild(panel);
@@ -1019,7 +1219,7 @@
     POINTS_DISPLAY.textContent = puntos + " pts";
   }
 
-  /* ----- CARRITO (sin alert) ----- */
+  /* ----- CARRITO ----- */
 
   function updateCartRow() {
     const totalProductos = cart.length;
@@ -1044,22 +1244,80 @@
     console.log("Carrito (demo):", cart);
   }
 
-  // botón grande inferior (por ahora solo loguea, no abre vista nueva real)
+  function buildCartModal() {
+    CART_ITEMS.innerHTML = "";
+    if (!cart.length) {
+      const empty = document.createElement("div");
+      empty.textContent = "Tu carrito está vacío.";
+      empty.style.fontSize = "12px";
+      empty.style.color = "#b6b0cf";
+      CART_ITEMS.appendChild(empty);
+    } else {
+      cart.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "cart-item-row";
+
+        const main = document.createElement("div");
+        main.className = "cart-item-main";
+
+        const left = document.createElement("div");
+        left.className = "cart-item-name";
+        left.textContent = `${item.nombre} – ${item.gramos} g${item.picante === "Sí" ? " (picante)" : ""}`;
+
+        const right = document.createElement("div");
+        right.textContent = formatoColones(item.subtotal);
+
+        main.appendChild(left);
+        main.appendChild(right);
+        row.appendChild(main);
+
+        if (item.notas) {
+          const notes = document.createElement("div");
+          notes.className = "cart-item-notes";
+          notes.textContent = item.notas;
+          row.appendChild(notes);
+        }
+
+        CART_ITEMS.appendChild(row);
+      });
+    }
+
+    const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
+    CART_TOTAL.textContent = formatoColones(totalColones);
+  }
+
+  function openCartModal() {
+    buildCartModal();
+    CART_MODAL.classList.add("show");
+  }
+
+  function closeCartModal() {
+    CART_MODAL.classList.remove("show");
+  }
+
   ADD_BTN.addEventListener("click", () => {
-    console.log("Ver carrito / ir a pagar (demo). Carrito actual:", cart);
+    openCartModal();
+  });
+
+  CART_CLOSE_BTN.addEventListener("click", closeCartModal);
+  CART_OK_BTN.addEventListener("click", closeCartModal);
+  CART_MODAL.addEventListener("click", (e) => {
+    if (e.target === CART_MODAL) {
+      closeCartModal();
+    }
   });
 
   /* ----- CONTROL FLECHAS, MODO Y RESIZE ----- */
 
   prevBtn.addEventListener("click", () => {
     currentIndex = (currentIndex - 1 + PRODUCTS.length) % PRODUCTS.length;
-    expandedId = PRODUCTS[currentIndex].id;
+    expandedId = null; // navegar solo, sin abrir panel
     updateUI();
   });
 
   nextBtn.addEventListener("click", () => {
     currentIndex = (currentIndex + 1) % PRODUCTS.length;
-    expandedId = PRODUCTS[currentIndex].id;
+    expandedId = null; // navegar solo, sin abrir panel
     updateUI();
   });
 
