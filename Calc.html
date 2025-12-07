@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>5:40 Monte Alto – Calculadora (Lab Carrusel)</title>
+  <title>6:05 Monte Alto – Calculadora (Lab Carrusel)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -146,7 +146,7 @@
 
     .carousel-viewport {
       position: relative;
-      overflow: Hidden;
+      overflow: visible;
       padding: 6px 0;
     }
 
@@ -431,6 +431,95 @@
       color: #ffd976;
     }
 
+    /* Panel desplegable bajo producto */
+
+    .product-details-panel {
+      margin: 4px 4px 10px 54px;
+      padding: 10px 12px 12px;
+      border-radius: 16px;
+      background: #0b3c4f;
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 11px;
+      color: #e3eff7;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      align-items: center;
+    }
+
+    .field-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .field-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c0d9e6;
+    }
+
+    .field-input,
+    .field-select,
+    .field-notes {
+      width: 100%;
+      border-radius: 8px;
+      border: none;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: inherit;
+      color: #f7fafe;
+      background: rgba(0,0,0,0.28);
+      outline: none;
+    }
+
+    .field-input::placeholder,
+    .field-notes::placeholder {
+      color: rgba(230,242,255,0.6);
+    }
+
+    .field-select {
+      appearance: none;
+    }
+
+    .field-notes {
+      resize: vertical;
+      min-height: 40px;
+      max-height: 80px;
+    }
+
+    .details-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .btn-mini-add {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #161616;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-mini-add span.icon {
+      font-size: 13px;
+    }
+
     .bottom-footer {
       margin-top: 8px;
       display: flex;
@@ -565,7 +654,7 @@
         <span>₡0</span>
       </div>
       <button class="btn-primary" id="addBtn">
-        <span>Agregar al carrito (demo)</span>
+        <span>Agregar al carrito (producto actual)</span>
         <span class="icon">＋</span>
       </button>
       <div class="points-row">
@@ -691,6 +780,21 @@
 
   const cart = [];
 
+  // estado de panel por producto
+  const selectionState = {};
+  let expandedId = null;
+
+  function getSelection(prodId) {
+    if (!selectionState[prodId]) {
+      selectionState[prodId] = {
+        peso: gramosBase,
+        picante: "No",
+        notas: ""
+      };
+    }
+    return selectionState[prodId];
+  }
+
   function formatoColones(valor) {
     return "₡" + valor.toLocaleString("es-CR");
   }
@@ -720,6 +824,7 @@
         const index = Number(slide.dataset.index);
         if (index !== currentIndex) {
           currentIndex = index;
+          expandedId = PRODUCTS[index].id;
           updateUI();
         }
       });
@@ -735,6 +840,7 @@
       d.dataset.index = idx.toString();
       d.addEventListener("click", () => {
         currentIndex = idx;
+        expandedId = PRODUCTS[idx].id;
         updateUI();
       });
       dotsContainer.appendChild(d);
@@ -759,31 +865,30 @@
     });
   }
 
-function updateTrackPosition() {
-  if (!slides.length) return;
+  function updateTrackPosition() {
+    if (!slides.length) return;
 
-  const first = slides[0];
-  const slideWidth = first.getBoundingClientRect().width;
-  const viewport = document.querySelector(".carousel-viewport");
-  const viewportWidth = viewport.getBoundingClientRect().width;
+    const first = slides[0];
+    const slideWidth = first.getBoundingClientRect().width;
+    const viewport = document.querySelector(".carousel-viewport");
+    const viewportWidth = viewport.getBoundingClientRect().width;
 
-  // cuánto espacio sobra a los lados del slide dentro del viewport
-  const extra = (viewportWidth - slideWidth) / 2;
+    const extra = (viewportWidth - slideWidth) / 2;
+    const offset = currentIndex * (slideWidth + gapPx) - extra;
 
-  // centramos el slide actual y dejamos un poquito de vecino
-  const offset = currentIndex * (slideWidth + gapPx) - extra;
+    track.style.transform = `translateX(-${offset}px)`;
+  }
 
-  track.style.transform = `translateX(-${offset}px)`;
-}
-
-  /* ----- LISTA INFERIOR ----- */
+  /* ----- LISTA INFERIOR + PANEL ----- */
 
   function renderProductList() {
     PRODUCT_LIST.innerHTML = "";
+
     PRODUCTS.forEach((prod, idx) => {
       const row = document.createElement("div");
       row.className = "product-row";
       row.dataset.index = idx.toString();
+      if (idx === currentIndex) row.classList.add("active");
 
       const thumb = document.createElement("div");
       thumb.className = "product-thumb";
@@ -820,21 +925,78 @@ function updateTrackPosition() {
 
       row.addEventListener("click", () => {
         currentIndex = idx;
+        expandedId = (expandedId === prod.id) ? null : prod.id;
         updateUI();
       });
 
       PRODUCT_LIST.appendChild(row);
+
+      if (expandedId === prod.id) {
+        const state = getSelection(prod.id);
+        const panel = document.createElement("div");
+        panel.className = "product-details-panel";
+
+        panel.innerHTML = `
+          <div class="field-row">
+            <div class="field-block">
+              <div class="field-label">Peso (g)</div>
+              <input type="number" min="100" step="50"
+                     class="field-input"
+                     value="${state.peso}"
+                     data-field="peso">
+            </div>
+            <div class="field-block">
+              <div class="field-label">Picante</div>
+              <select class="field-select" data-field="picante">
+                <option value="No"${state.picante === "No" ? " selected" : ""}>No</option>
+                <option value="Sí"${state.picante === "Sí" ? " selected" : ""}>Sí</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">Notas</div>
+            <textarea class="field-notes"
+                      placeholder="Ej: Para parrilla del sábado, sin tanto picante"
+                      data-field="notas">${state.notas}</textarea>
+          </div>
+          <div class="details-footer">
+            <button class="btn-mini-add">
+              <span>Agregar a carrito</span>
+              <span class="icon">＋</span>
+            </button>
+          </div>
+        `;
+
+        // listeners de campos
+        const pesoInput = panel.querySelector('[data-field="peso"]');
+        const picanteSelect = panel.querySelector('[data-field="picante"]');
+        const notasArea = panel.querySelector('[data-field="notas"]');
+        const miniBtn = panel.querySelector(".btn-mini-add");
+
+        pesoInput.addEventListener("input", (e) => {
+          const v = parseInt(e.target.value, 10);
+          state.peso = isNaN(v) ? "" : v;
+        });
+
+        picanteSelect.addEventListener("change", (e) => {
+          state.picante = e.target.value;
+        });
+
+        notasArea.addEventListener("input", (e) => {
+          state.notas = e.target.value;
+        });
+
+        miniBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          addToCart(prod, state);
+        });
+
+        PRODUCT_LIST.appendChild(panel);
+      }
     });
   }
 
-  function marcarFilaActiva() {
-    const rows = PRODUCT_LIST.querySelectorAll(".product-row");
-    rows.forEach((r, idx) => {
-      r.classList.toggle("active", idx === currentIndex);
-    });
-  }
-
-  /* ----- HERO + SUBTOTAL/PUNTOS ----- */
+  /* ----- HERO + SUBTOTAL/PUNTOS (500 g referencia) ----- */
 
   function updateHero() {
     const prod = PRODUCTS[currentIndex];
@@ -864,28 +1026,39 @@ function updateTrackPosition() {
     CART_ROW.lastElementChild.textContent = formatoColones(totalColones);
   }
 
-  ADD_BTN.addEventListener("click", () => {
-    const prod = PRODUCTS[currentIndex];
-    const subtotal = calcularSubtotal(prod, gramosBase);
+  function addToCart(prod, stateOverride) {
+    const state = stateOverride || getSelection(prod.id);
+    const gramos = Number(state.peso) || gramosBase;
+    const subtotal = calcularSubtotal(prod, gramos);
     cart.push({
       id: prod.id,
       nombre: prod.nombre,
-      gramos: gramosBase,
+      gramos,
+      picante: state.picante,
+      notas: state.notas,
       subtotal
     });
     updateCartRow();
     console.log("Carrito (demo):", cart);
+  }
+
+  // botón grande inferior: agrega usando peso base (500 g) al producto actual
+  ADD_BTN.addEventListener("click", () => {
+    const prod = PRODUCTS[currentIndex];
+    addToCart(prod, { peso: gramosBase, picante: "No", notas: "" });
   });
 
   /* ----- CONTROL FLECHAS, MODO Y RESIZE ----- */
 
   prevBtn.addEventListener("click", () => {
     currentIndex = (currentIndex - 1 + PRODUCTS.length) % PRODUCTS.length;
+    expandedId = PRODUCTS[currentIndex].id;
     updateUI();
   });
 
   nextBtn.addEventListener("click", () => {
     currentIndex = (currentIndex + 1) % PRODUCTS.length;
+    expandedId = PRODUCTS[currentIndex].id;
     updateUI();
   });
 
@@ -906,15 +1079,14 @@ function updateTrackPosition() {
     updateDots();
     updateTrackPosition();
     updateHero();
-    marcarFilaActiva();
+    renderProductList();
   }
 
   // inicialización
   createSlides();
-  renderProductList();
+  expandedId = PRODUCTS[0].id;   // abre el primero por defecto
   updateUI();
   updateCartRow();
 </script>
 </body>
 </html>
-
