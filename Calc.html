@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title> 1.50 Monte Alto – Calculadora</title>
+  <title>2.35 Embutidos Monte Alto</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -81,7 +81,7 @@
       color: #fdfdfd;
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;  /* una sola línea */
+      text-overflow: ellipsis;
     }
 
     .hero-price {
@@ -364,7 +364,7 @@
     .product-name {
       font-size: 13px;
       font-weight: 600;
-      white-space: nowrap;   /* una sola línea */
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -706,7 +706,7 @@
 <div class="app">
   <div class="card-top">
     <div class="title-section">
-      <h1>Monte Alto – Calculadora</h1>
+      <h1>Embutidos Monte Alto</h1>
       <div class="hero-name-row">
         <div class="hero-name" id="heroName">Bratwurst</div>
         <div class="hero-price" id="heroPrice">₡8 900 / kg</div>
@@ -727,7 +727,7 @@
 
     <div class="hero-meta-row">
       <span id="heroMeta">Para 3–4 panes</span>
-      <span>500 g sugeridos</span>
+      <span id="heroRightMeta">500 g sugeridos</span>
     </div>
     <p class="hero-desc" id="heroDesc">
       Suave, jugoso, perfecto para hot dogs premium.
@@ -746,7 +746,7 @@
 
     <div class="bottom-footer">
       <div class="subtotal-row">
-        <span>Subtotal estimado (500 g)</span>
+        <span id="subtotalLabel">Subtotal estimado (500 g)</span>
         <strong id="subtotalDisplay">₡0</strong>
       </div>
       <div class="cart-row" id="cartRow">
@@ -784,11 +784,20 @@
 </div>
 
 <script>
+  // URL de tu Apps Script (ya me la habías dado antes)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrWQZfdFBOSo75tNlCjHXtad67DKMu5BzXOU7mapsZmVzQWC7td4Y7XpD96EdwxYGj/exec";
+
+  // Valores por defecto (se usan hasta que lleguen los del Sheet)
+  let priceChorizo = 8500;
+  let priceTocineta = 10000;
+  let priceComboTotal = 25000;
+
   // Productos Monte Alto – laboratorio carrusel
   const PRODUCTS = [
     {
       id: "texmex",
       nombre: "Tex-Mex",
+      tipo: "chorizo",
       precioKg: 8500,
       favorito: true,
       featureIcon: "🔥",
@@ -802,6 +811,7 @@
     {
       id: "caribeno",
       nombre: "Caribeño",
+      tipo: "chorizo",
       precioKg: 8700,
       favorito: true,
       featureIcon: "🥥",
@@ -815,6 +825,7 @@
     {
       id: "tico",
       nombre: "Tico Casero",
+      tipo: "chorizo",
       precioKg: 8300,
       favorito: false,
       featureIcon: "🇨🇷",
@@ -828,6 +839,7 @@
     {
       id: "argentino",
       nombre: "Criollo Argentino",
+      tipo: "chorizo",
       precioKg: 8300,
       favorito: false,
       featureIcon: "🥩",
@@ -841,6 +853,7 @@
     {
       id: "bratwurst",
       nombre: "Bratwurst",
+      tipo: "chorizo",
       precioKg: 8900,
       favorito: false,
       featureIcon: "🇩🇪",
@@ -854,6 +867,7 @@
     {
       id: "tocineta",
       nombre: "Tocineta Ahumada",
+      tipo: "tocineta",
       precioKg: 10000,
       favorito: true,
       featureIcon: "🥓",
@@ -867,7 +881,8 @@
     {
       id: "combo",
       nombre: "Combo surtido Monte Alto",
-      precioKg: 0,
+      tipo: "combo",
+      precioKg: 25000, // este es el precio total del combo, no /kg
       favorito: false,
       featureIcon: "🌟",
       featureText: "Serás la estrella de la fiesta",
@@ -879,10 +894,43 @@
     }
   ];
 
+  // Aplica los precios chorizo/tocineta/combo a los productos
+  function applyBackendPrices() {
+    PRODUCTS.forEach(p => {
+      if (p.tipo === "tocineta") {
+        p.precioKg = priceTocineta;
+      } else if (p.tipo === "combo") {
+        p.precioKg = priceComboTotal;
+      } else if (p.tipo === "chorizo") {
+        p.precioKg = priceChorizo;
+      }
+    });
+  }
+
+  async function loadPricesFromSheet() {
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getLabPrices" })
+      });
+      const data = await res.json();
+      if (typeof data.chorizo === "number") priceChorizo = data.chorizo;
+      if (typeof data.tocineta === "number") priceTocineta = data.tocineta;
+      if (typeof data.comboTotal === "number") priceComboTotal = data.comboTotal;
+      applyBackendPrices();
+      updateUI();
+      updateCartRow();
+    } catch (err) {
+      console.error("Error cargando precios desde Google Sheets. Se usan valores por defecto.", err);
+    }
+  }
+
   const HERO_NAME = document.getElementById("heroName");
   const HERO_PRICE = document.getElementById("heroPrice");
   const HERO_SUB = document.getElementById("heroSub");
   const HERO_META = document.getElementById("heroMeta");
+  const HERO_RIGHT_META = document.getElementById("heroRightMeta");
   const HERO_DESC = document.getElementById("heroDesc");
 
   const track = document.getElementById("carouselTrack");
@@ -892,6 +940,7 @@
   const nextBtn = document.getElementById("nextBtn");
 
   const PRODUCT_LIST = document.getElementById("productList");
+  const SUBTOTAL_LABEL = document.getElementById("subtotalLabel");
   const SUBTOTAL_DISPLAY = document.getElementById("subtotalDisplay");
   const POINTS_DISPLAY = document.getElementById("pointsDisplay");
   const ADD_BTN = document.getElementById("addBtn");
@@ -906,11 +955,12 @@
   let currentIndex = 0;
   let slides = [];
   const gramosBase = 500;
+  const gramosComboFijo = 2500;
   const colonesPorPunto = 100;
 
   const cart = [];
   const selectionState = {};
-  let expandedId = null; // por defecto escondido
+  let expandedId = null; // por defecto panel oculto
 
   function getSelection(prodId) {
     if (!selectionState[prodId]) {
@@ -927,7 +977,7 @@
     return "₡" + valor.toLocaleString("es-CR");
   }
 
-  function calcularSubtotal(prod, gramos) {
+  function calcularSubtotalKg(prod, gramos) {
     if (!prod.precioKg || prod.precioKg <= 0) return 0;
     return Math.round(prod.precioKg * (gramos / 1000));
   }
@@ -945,8 +995,8 @@
     container.style.top = "0px";
 
     const colors = ["#ffd54a", "#ff8a65", "#4dd0e1", "#ce93d8", "#81c784"];
-
     const pieces = 24;
+
     for (let i = 0; i < pieces; i++) {
       const piece = document.createElement("div");
       piece.className = "confetti-piece";
@@ -963,9 +1013,7 @@
     }
 
     document.body.appendChild(container);
-    setTimeout(() => {
-      container.remove();
-    }, 800);
+    setTimeout(() => container.remove(), 800);
   }
 
   /* ----- CARRUSEL ----- */
@@ -998,7 +1046,7 @@
       slide.addEventListener("click", () => {
         const index = Number(slide.dataset.index);
         currentIndex = index;
-        expandedId = PRODUCTS[index].id; // abrir panel al tocar la imagen
+        expandedId = PRODUCTS[index].id; // abre panel al tocar imagen
         updateUI();
       });
 
@@ -1013,7 +1061,7 @@
       d.dataset.index = idx.toString();
       d.addEventListener("click", () => {
         currentIndex = idx;
-        expandedId = null; // solo navegar, sin panel
+        expandedId = null; // solo navegar
         updateUI();
       });
       dotsContainer.appendChild(d);
@@ -1036,9 +1084,7 @@
 
   function updateTrackPosition() {
     if (!slides.length) return;
-    // Usamos el ancho del viewport, no del slide,
-    // para evitar el corrimiento acumulado.
-    const slideWidth = viewportEl.offsetWidth;   // entero, sin decimales raros
+    const slideWidth = viewportEl.offsetWidth; // evitar corrimiento acumulado
     const offset = currentIndex * slideWidth;
     track.style.transform = `translateX(-${offset}px)`;
   }
@@ -1109,56 +1155,88 @@
         const panel = document.createElement("div");
         panel.className = "product-details-panel";
 
-        panel.innerHTML = `
-          <div class="field-row">
-            <div class="field-block">
-              <div class="field-label">Peso (g)</div>
-              <input type="number" min="100" step="50"
-                     class="field-input"
-                     value="${state.peso}"
-                     data-field="peso">
-            </div>
+        if (prod.tipo === "combo") {
+          // Panel especial: sin peso, solo picante + notas
+          panel.innerHTML = `
             <div class="field-block">
               <div class="field-label">Picante</div>
-              <select class="field-select${state.picante === "Sí" ? " spicy-yes" : ""}" data-field="picante">
+              <select class="field-select" data-field="picante">
                 <option value="No"${state.picante === "No" ? " selected" : ""}>No</option>
                 <option value="Sí"${state.picante === "Sí" ? " selected" : ""}>Sí</option>
               </select>
             </div>
-          </div>
-          <div class="field-block">
-            <div class="field-label">Notas</div>
-            <textarea class="field-notes"
-                      placeholder="Pedido urgente"
-                      data-field="notas">${state.notas}</textarea>
-          </div>
-          <div class="details-footer">
-            <button class="btn-mini-add">
-              <span>Agregar a carrito</span>
-              <span class="icon">＋</span>
-            </button>
-          </div>
-        `;
+            <div class="field-block">
+              <div class="field-label">Notas</div>
+              <textarea class="field-notes"
+                        placeholder="Pedido urgente"
+                        data-field="notas">${state.notas}</textarea>
+            </div>
+            <div class="details-footer">
+              <button class="btn-mini-add">
+                <span>Agregar a carrito</span>
+                <span class="icon">＋</span>
+              </button>
+            </div>
+          `;
+        } else {
+          // Panel normal con peso + picante + notas
+          panel.innerHTML = `
+            <div class="field-row">
+              <div class="field-block">
+                <div class="field-label">Peso (g)</div>
+                <input type="number" min="100" step="50"
+                       class="field-input"
+                       value="${state.peso}"
+                       data-field="peso">
+              </div>
+              <div class="field-block">
+                <div class="field-label">Picante</div>
+                <select class="field-select${state.picante === "Sí" ? " spicy-yes" : ""}" data-field="picante">
+                  <option value="No"${state.picante === "No" ? " selected" : ""}>No</option>
+                  <option value="Sí"${state.picante === "Sí" ? " selected" : ""}>Sí</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-block">
+              <div class="field-label">Notas</div>
+              <textarea class="field-notes"
+                        placeholder="Pedido urgente"
+                        data-field="notas">${state.notas}</textarea>
+            </div>
+            <div class="details-footer">
+              <button class="btn-mini-add">
+                <span>Agregar a carrito</span>
+                <span class="icon">＋</span>
+              </button>
+            </div>
+          `;
+        }
 
         const pesoInput = panel.querySelector('[data-field="peso"]');
         const picanteSelect = panel.querySelector('[data-field="picante"]');
         const notasArea = panel.querySelector('[data-field="notas"]');
         const miniBtn = panel.querySelector(".btn-mini-add");
 
-        pesoInput.addEventListener("input", (e) => {
-          const v = parseInt(e.target.value, 10);
-          state.peso = isNaN(v) ? "" : v;
-        });
+        if (pesoInput) {
+          pesoInput.addEventListener("input", (e) => {
+            const v = parseInt(e.target.value, 10);
+            state.peso = isNaN(v) ? "" : v;
+          });
+        }
 
-        picanteSelect.addEventListener("change", (e) => {
-          state.picante = e.target.value;
-          applyPicanteStyle(e.target);
-        });
-        applyPicanteStyle(picanteSelect);
+        if (picanteSelect) {
+          picanteSelect.addEventListener("change", (e) => {
+            state.picante = e.target.value;
+            applyPicanteStyle(e.target);
+          });
+          applyPicanteStyle(picanteSelect);
+        }
 
-        notasArea.addEventListener("input", (e) => {
-          state.notas = e.target.value;
-        });
+        if (notasArea) {
+          notasArea.addEventListener("input", (e) => {
+            state.notas = e.target.value;
+          });
+        }
 
         miniBtn.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -1171,24 +1249,37 @@
     });
   }
 
-  /* ----- HERO + SUBTOTAL/PUNTOS (500 g referencia) ----- */
+  /* ----- HERO + SUBTOTAL/PUNTOS (500 g referencia o combo total) ----- */
 
   function updateHero() {
     const prod = PRODUCTS[currentIndex];
     HERO_NAME.textContent = prod.nombre;
-    HERO_PRICE.textContent = prod.precioKg > 0
-      ? `${formatoColones(prod.precioKg)} / kg`
-      : "Combo surtido";
     HERO_SUB.textContent = prod.tagline || "Producto Monte Alto";
     HERO_META.textContent = prod.rinde;
+
+    let subtotal = 0;
+
+    if (prod.tipo === "combo") {
+      HERO_PRICE.textContent = formatoColones(prod.precioKg);
+      HERO_RIGHT_META.textContent = "";
+      SUBTOTAL_LABEL.textContent = "Subtotal combo";
+      subtotal = prod.precioKg || 0;
+      SUBTOTAL_DISPLAY.textContent = subtotal > 0
+        ? formatoColones(subtotal)
+        : "Sin precio";
+    } else {
+      HERO_PRICE.textContent = `${formatoColones(prod.precioKg)} / kg`;
+      HERO_RIGHT_META.textContent = "500 g sugeridos";
+      SUBTOTAL_LABEL.textContent = "Subtotal estimado (500 g)";
+      subtotal = calcularSubtotalKg(prod, gramosBase);
+      SUBTOTAL_DISPLAY.textContent = subtotal > 0
+        ? formatoColones(subtotal)
+        : "—";
+    }
+
     HERO_DESC.textContent = prod.descHero;
 
-    const subtotal = calcularSubtotal(prod, gramosBase);
-    SUBTOTAL_DISPLAY.textContent = subtotal > 0
-      ? formatoColones(subtotal)
-      : "Según detalle de combo";
-
-    const puntos = Math.floor(subtotal / colonesPorPunto);
+    const puntos = subtotal > 0 ? Math.floor(subtotal / colonesPorPunto) : 0;
     POINTS_DISPLAY.textContent = puntos + " pts";
   }
 
@@ -1203,8 +1294,17 @@
 
   function addToCart(prod, stateOverride) {
     const state = stateOverride || getSelection(prod.id);
-    const gramos = Number(state.peso) || gramosBase;
-    const subtotal = calcularSubtotal(prod, gramos);
+    let gramos;
+    let subtotal;
+
+    if (prod.tipo === "combo") {
+      gramos = gramosComboFijo;
+      subtotal = prod.precioKg || priceComboTotal;
+    } else {
+      gramos = Number(state.peso) || gramosBase;
+      subtotal = calcularSubtotalKg(prod, gramos);
+    }
+
     cart.push({
       id: prod.id,
       nombre: prod.nombre,
@@ -1235,7 +1335,9 @@
 
         const left = document.createElement("div");
         left.className = "cart-item-name";
-        left.textContent = `${item.nombre} – ${item.gramos} g${item.picante === "Sí" ? " (picante)" : ""}`;
+        left.textContent = `${item.nombre} – ${
+          item.gramos ? item.gramos + " g" : ""
+        }${item.picante === "Sí" ? " (picante)" : ""}`;
 
         const right = document.createElement("div");
         right.textContent = formatoColones(item.subtotal);
@@ -1268,23 +1370,18 @@
     CART_MODAL.classList.remove("show");
   }
 
-  ADD_BTN.addEventListener("click", () => {
-    openCartModal();
-  });
-
+  ADD_BTN.addEventListener("click", openCartModal);
   CART_CLOSE_BTN.addEventListener("click", closeCartModal);
   CART_OK_BTN.addEventListener("click", closeCartModal);
   CART_MODAL.addEventListener("click", (e) => {
-    if (e.target === CART_MODAL) {
-      closeCartModal();
-    }
+    if (e.target === CART_MODAL) closeCartModal();
   });
 
   /* ----- CONTROL FLECHAS Y RESIZE ----- */
 
   prevBtn.addEventListener("click", () => {
     currentIndex = (currentIndex - 1 + PRODUCTS.length) % PRODUCTS.length;
-    expandedId = null; // al navegar, panel se esconde
+    expandedId = null;
     updateUI();
   });
 
@@ -1294,9 +1391,7 @@
     updateUI();
   });
 
-  window.addEventListener("resize", () => {
-    updateTrackPosition();
-  });
+  window.addEventListener("resize", updateTrackPosition);
 
   /* ----- ORQUESTA FINAL ----- */
 
@@ -1309,10 +1404,11 @@
   }
 
   // inicialización
+  applyBackendPrices();   // usa defaults primero
   createSlides();
   updateUI();
   updateCartRow();
+  loadPricesFromSheet();  // luego intenta traer precios reales del Sheet
 </script>
 </body>
 </html>
-
