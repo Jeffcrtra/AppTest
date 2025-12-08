@@ -886,6 +886,7 @@
   const HERO_DESC = document.getElementById("heroDesc");
 
   const track = document.getElementById("carouselTrack");
+  const viewportEl = document.querySelector(".carousel-viewport");
   const dotsContainer = document.getElementById("dots");
   const prevBtn = document.getElementById("prevBtn");
   const nextBtn = document.getElementById("nextBtn");
@@ -1035,8 +1036,9 @@
 
   function updateTrackPosition() {
     if (!slides.length) return;
-    const first = slides[0];
-    const slideWidth = first.getBoundingClientRect().width;
+    // Usamos el ancho del viewport, no del slide,
+    // para evitar el corrimiento acumulado.
+    const slideWidth = viewportEl.offsetWidth;   // entero, sin decimales raros
     const offset = currentIndex * slideWidth;
     track.style.transform = `translateX(-${offset}px)`;
   }
@@ -1313,3 +1315,4 @@
 </script>
 </body>
 </html>
+
