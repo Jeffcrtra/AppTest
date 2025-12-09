@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>2.12 Embutidos Monte Alto</title>
+  <title>2.18 Embutidos Monte Alto</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -1319,7 +1319,7 @@
     } else {
       HERO_PRICE.textContent = `${formatoColones(prod.precioKg)} / kg`;
       HERO_RIGHT_META.textContent = "500 g sugeridos";
-      SUBTOTAL_LABEL.textContent = "Subtotal estimado (500 g)";
+      SUBTOTAL_LABEL.textContent = "  ";
       subtotal = calcularSubtotalKg(prod, gramosBase);
       SUBTOTAL_DISPLAY.textContent = subtotal > 0
         ? formatoColones(subtotal)
@@ -1481,4 +1481,5 @@
 </script>
 </body>
 </html>
+
 
