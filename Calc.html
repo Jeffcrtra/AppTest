@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>2.33 Embutidos Monte Alto</title>
+  <title>3.10 Embutidos Monte Alto</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -10,6 +10,7 @@
       --bg-card-top: #191c24;
       --bg-card-bottom: #11131a;
       --accent: #ffd54a;
+      --accent-green: #3ddc84;
       --text-main: #f7f5ff;
       --text-muted: #9a9fb5;
       --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
@@ -47,7 +48,7 @@
     .card-top {
       background: var(--bg-card-top);
       border-radius: 32px 32px 0 0;
-      padding: 14px 18px 20px 18px;
+      padding: 14px 18px 20px 18;
       box-shadow: var(--shadow-soft);
       position: relative;
       z-index: 2;
@@ -61,7 +62,7 @@
     }
 
     h1 {
-      font-size: 14px;
+      font-size: 15px; /* + ~7% */
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--text-muted);
@@ -75,7 +76,7 @@
     }
 
     .hero-name {
-      font-size: 24px;
+      font-size: 26px; /* + ~8% */
       font-weight: 700;
       line-height: 1.1;
       color: #fdfdfd;
@@ -85,14 +86,14 @@
     }
 
     .hero-price {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
       color: #f7b94a;
       white-space: nowrap;
     }
 
     .hero-sub {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-muted);
     }
 
@@ -189,7 +190,7 @@
       border-radius: 999px;
       background: #1f3248;
       color: #f7f5ff;
-      font-size: 11px;
+      font-size: 12px; /* + ~9% */
       box-shadow: 0 8px 18px rgba(0,0,0,0.45);
       z-index: 5;
       white-space: nowrap;
@@ -274,12 +275,12 @@
       justify-content: space-between;
       align-items: center;
       margin-top: 6px;
-      font-size: 11px;
+      font-size: 12px; /* + ~9% */
       color: var(--text-muted);
     }
 
     .hero-desc {
-      font-size: 13px;
+      font-size: 14px; /* + ~8% */
       margin-top: 4px;
       color: #c7cadb;
     }
@@ -303,12 +304,12 @@
     }
 
     .bottom-header h2 {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
     }
 
     .badge-soft {
-      font-size: 11px;
+      font-size: 12px;
       padding: 5px 10px;
       border-radius: 999px;
       background: rgba(255,255,255,0.08);
@@ -362,7 +363,7 @@
     }
 
     .product-name {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
@@ -370,13 +371,13 @@
     }
 
     .product-desc {
-      font-size: 11px;
+      font-size: 12px;
       color: #a49fb0;
     }
 
     .product-meta {
       text-align: right;
-      font-size: 11px;
+      font-size: 12px;
       color: #c3bdce;
       display: flex;
       flex-direction: column;
@@ -384,7 +385,7 @@
     }
 
     .product-meta strong {
-      font-size: 13px;
+      font-size: 14px;
       color: #ffd976;
     }
 
@@ -396,7 +397,7 @@
       border-radius: 16px;
       background: #0b3c4f;
       border: 1px solid rgba(255,255,255,0.08);
-      font-size: 11px;
+      font-size: 12px;
       color: #e3eff7;
       display: flex;
       flex-direction: column;
@@ -417,7 +418,7 @@
     }
 
     .field-label {
-      font-size: 10px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: #c0d9e6;
@@ -428,18 +429,18 @@
     .field-notes {
       width: 100%;
       border-radius: 8px;
-      border: none;
-      padding: 6px 8px;
-      font-size: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 7px 9px;
+      font-size: 13px;
       font-family: inherit;
       color: #f7fafe;
-      background: rgba(0,0,0,0.28);
+      background: rgba(255,255,255,0.06); /* más claro */
       outline: none;
     }
 
     .field-input::placeholder,
     .field-notes::placeholder {
-      color: rgba(230,242,255,0.6);
+      color: rgba(230,242,255,0.7);
     }
 
     .field-select {
@@ -469,7 +470,7 @@
       border: none;
       border-radius: 999px;
       padding: 7px 14px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       background: var(--accent);
       color: #161616;
@@ -493,21 +494,13 @@
       gap: 6px;
     }
 
+    /* Ocultamos completamente la fila de subtotal estimado */
     .subtotal-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      color: #d9d4e5;
-    }
-
-    .subtotal-row strong {
-      font-size: 16px;
-      color: #ffffff;
+      display: none;
     }
 
     .cart-row {
-      font-size: 11px;
+      font-size: 12px;
       color: #b6b0cf;
       display: flex;
       justify-content: space-between;
@@ -545,27 +538,22 @@
     }
 
     .points-row {
-      margin-top: 4px;
-      font-size: 11px;
+      font-size: 12px;
       color: #ada6c7;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 10px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      margin-top: 2px;
     }
 
     .points-row span.highlight {
       color: #ffe789;
       font-weight: 600;
-      font-size: 12px;
     }
 
     @media (max-width: 360px) {
       .hero-name {
-        font-size: 21px;
+        font-size: 22px;
       }
     }
 
@@ -599,7 +587,7 @@
       }
     }
 
-    /* Modal carrito */
+    /* Modal base (carrito y confirmación reutilizan estilos) */
 
     .modal-backdrop {
       position: fixed;
@@ -623,6 +611,7 @@
       padding: 16px 18px 18px;
       box-shadow: 0 -8px 32px rgba(0,0,0,0.8);
       color: #f7f5ff;
+      font-size: 14px; /* ~20% más grande que el 12px anterior */
     }
 
     .modal-header {
@@ -633,7 +622,7 @@
     }
 
     .modal-header h3 {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
     }
 
@@ -651,14 +640,15 @@
     }
 
     .cart-items {
-      max-height: 180px;
+      max-height: 220px;
       overflow-y: auto;
       padding-right: 6px;
       margin-bottom: 8px;
+      font-size: 13px;
     }
 
     .cart-item-row {
-      font-size: 12px;
+      font-size: 13px;
       padding: 6px 0;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       display: flex;
@@ -677,75 +667,16 @@
     }
 
     .cart-item-notes {
-      font-size: 11px;
+      font-size: 12px;
       color: #b6b0cf;
-    }
-
-    .modal-form {
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 8px;
-    }
-
-    .modal-form-title {
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #e2def8;
-    }
-
-    .modal-form-row {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      margin-bottom: 6px;
-      font-size: 11px;
-    }
-
-    .modal-form-row label {
-      color: #cbc6ea;
-    }
-
-    .modal-form-row input,
-    .modal-form-row textarea {
-      border-radius: 8px;
-      border: none;
-      padding: 6px 8px;
-      font-size: 12px;
-      font-family: inherit;
-      color: #f7fafe;
-      background: #151726;
-      outline: none;
-    }
-
-    .modal-form-row input::placeholder,
-    .modal-form-row textarea::placeholder {
-      color: rgba(230,242,255,0.7);
-    }
-
-    .modal-form-row textarea {
-      resize: vertical;
-      min-height: 40px;
-      max-height: 80px;
-    }
-
-    .modal-form-row.checkbox-row {
-      flex-direction: row;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .modal-form-row.checkbox-row input[type="checkbox"] {
-      width: 14px;
-      height: 14px;
     }
 
     .modal-footer {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      font-size: 12px;
+      font-size: 13px;
+      margin-top: 6px;
     }
 
     .modal-footer-row {
@@ -754,37 +685,127 @@
       align-items: center;
     }
 
-    .modal-btn-primary {
+    .modal-btn-ok {
       margin-top: 4px;
       border: none;
       border-radius: 999px;
       padding: 9px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      background: #2ecc71;
-      color: #111;
-      cursor: pointer;
-      width: 100%;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-    }
-
-    .modal-btn-primary:disabled {
-      opacity: 0.4;
-      cursor: default;
-      box-shadow: none;
-    }
-
-    .modal-btn-ok {
-      margin-top: 2px;
-      border: none;
-      border-radius: 999px;
-      padding: 9px 16px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       background: var(--accent);
       color: #111;
       cursor: pointer;
       width: 100%;
+    }
+
+    .modal-btn-confirm {
+      background: var(--accent-green);
+      color: #071910;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .modal-btn-confirm span.icon {
+      font-size: 16px;
+    }
+
+    /* Modal confirmación (Paso 2) */
+
+    .confirm-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .confirm-text {
+      font-size: 14px;
+      color: #d1ccff;
+    }
+
+    .confirm-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .confirm-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #c0c6f2;
+    }
+
+    .confirm-input,
+    .confirm-notes {
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 8px 10px;
+      font-size: 14px;
+      background: rgba(255,255,255,0.06);
+      color: #f7fafe;
+      outline: none;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .confirm-input::placeholder,
+    .confirm-notes::placeholder {
+      color: rgba(230,242,255,0.7);
+    }
+
+    .confirm-notes {
+      min-height: 52px;
+      resize: vertical;
+    }
+
+    .points-info {
+      margin-top: 4px;
+      font-size: 15px; /* ~20% más grande */
+      color: #ffe789;
+    }
+
+    .points-info-muted {
+      font-size: 13px;
+      color: #b7b4d8;
+    }
+
+    .confirm-footer-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-secondary {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      background: #262938;
+      color: #f7f5ff;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .btn-primary-confirm {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      background: var(--accent-green);
+      color: #071910;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .btn-primary-confirm:disabled {
+      opacity: 0.5;
+      cursor: default;
     }
   </style>
 </head>
@@ -831,6 +852,7 @@
     </div>
 
     <div class="bottom-footer">
+      <!-- Subtotal row oculta por CSS -->
       <div class="subtotal-row">
         <span id="subtotalLabel">Subtotal estimado (500 g)</span>
         <strong id="subtotalDisplay">₡0</strong>
@@ -844,74 +866,103 @@
         <span class="icon">🛒</span>
       </button>
       <div class="points-row">
-        <span>Puntos acumulables por tu compra:</span>
+        <span>Puntos acumulables por esta compra:</span>
         <span class="highlight" id="pointsDisplay">0 pts</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal carrito + confirmación -->
+<!-- Modal carrito -->
 <div id="cartModal" class="modal-backdrop">
   <div class="modal-panel">
     <div class="modal-header">
-      <h3>Tu orden</h3>
+      <h3>Tu carrito</h3>
       <button class="modal-close" id="cartCloseBtn">✕</button>
     </div>
     <div class="cart-items" id="cartItems"></div>
-
-    <div class="modal-form">
-      <div class="modal-form-title">Confirmación del pedido</div>
-
-      <div class="modal-form-row">
-        <label for="clientName">Nombre completo *</label>
-        <input id="clientName" type="text" placeholder="Nombre y apellidos">
-      </div>
-
-      <div class="modal-form-row">
-        <label for="clientPhone">Teléfono *</label>
-        <input id="clientPhone" type="tel" placeholder="Ej: 8888-0000">
-      </div>
-
-      <div class="modal-form-row">
-        <label for="clientComments">Notas adicionales (opcional)</label>
-        <textarea id="clientComments" placeholder="Ej: Entrega urgente, mejor horario, etc."></textarea>
-      </div>
-
-      <div class="modal-form-row checkbox-row">
-        <input id="clientPromo" type="checkbox">
-        <label for="clientPromo">Quiero recibir promociones y novedades de Monte Alto</label>
-      </div>
-    </div>
-
     <div class="modal-footer">
       <div class="modal-footer-row">
         <span>Total:</span>
         <strong id="cartTotal">₡0</strong>
       </div>
-      <button class="modal-btn-primary" id="cartBuyBtn">Completar compra</button>
       <button class="modal-btn-ok" id="cartOkBtn">Cerrar</button>
+      <button class="modal-btn-ok modal-btn-confirm" id="cartConfirmBtn">
+        <span>Completar compra</span>
+        <span class="icon">🛒</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmación (Paso 2: Celular + puntos) -->
+<div id="confirmModal" class="modal-backdrop">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h3>Confirmar pedido</h3>
+      <button class="modal-close" id="confirmCloseBtn">✕</button>
+    </div>
+    <div class="confirm-body">
+      <div class="confirm-text">
+        Primero ingresá tu número de celular para revisar tus puntos acumulados y finalizar tu pedido.
+      </div>
+
+      <div class="confirm-field">
+        <label class="confirm-label" for="confirmPhone">Celular</label>
+        <input
+          id="confirmPhone"
+          class="confirm-input"
+          type="tel"
+          inputmode="numeric"
+          maxlength="20"
+          placeholder="Ej: 8888 8888">
+      </div>
+
+      <div id="pointsInfoWrapper">
+        <div id="pointsInfoMuted" class="points-info-muted">
+          Escribí tu número (8 dígitos) para ver tus puntos Monte Alto.
+        </div>
+        <div id="pointsInfo" class="points-info" style="display:none;">
+          <!-- aquí va el mensaje 🎉 Tenés XXX puntos acumulados en Monte Alto 🧡 -->
+        </div>
+      </div>
+
+      <!-- De momento dejamos Nombre/Notas listos para el siguiente paso -->
+      <div class="confirm-field">
+        <label class="confirm-label" for="confirmName">Nombre</label>
+        <input
+          id="confirmName"
+          class="confirm-input"
+          type="text"
+          placeholder="Tu nombre o el de quien recibe el pedido">
+      </div>
+
+      <div class="confirm-field">
+        <label class="confirm-label" for="confirmNotes">Notas para el pedido</label>
+        <textarea
+          id="confirmNotes"
+          class="confirm-notes"
+          placeholder="Ej: Entrega urgente, llamar antes de llegar, etc."></textarea>
+      </div>
+
+      <div class="confirm-footer-buttons">
+        <button class="btn-secondary" id="confirmBackToCartBtn">Volver al carrito</button>
+        <button class="btn-primary-confirm" id="confirmSendBtn" disabled>
+          Confirmar pedido
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-  // URL de tu Apps Script
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZALfVQXHrTZjzAxKzWM0dIakHL867J725s1b4NbolZW_e8yP/exec";
 
-  // ID de sesión simple para este dispositivo
-  const SESSION_ID =
-    "LAB-" +
-    Math.random().toString(36).slice(2) +
-    "-" +
-    Date.now().toString(36);
-
   // Valores por defecto (se usan hasta que lleguen los del Sheet)
-  let priceChorizo = 8500;
-  let priceTocineta = 10000;
-  let priceComboTotal = 25000;
+  let priceChorizo = 850;
+  let priceTocineta = 1000;
+  let priceComboTotal = 2500;
 
-  // Productos Monte Alto – laboratorio carrusel
   const PRODUCTS = [
     {
       id: "texmex",
@@ -1001,7 +1052,7 @@
       id: "combo",
       nombre: "Combo surtido Monte Alto",
       tipo: "combo",
-      precioKg: 25000, // precio total del combo
+      precioKg: 25000, // total combo
       favorito: false,
       featureIcon: "🌟",
       featureText: "Serás la estrella de la fiesta",
@@ -1013,7 +1064,6 @@
     }
   ];
 
-  // Aplica los precios chorizo/tocineta/combo a los productos
   function applyBackendPrices() {
     PRODUCTS.forEach(p => {
       if (p.tipo === "tocineta") {
@@ -1035,7 +1085,6 @@
       });
 
       console.log("HTTP status:", res.status, res.statusText);
-
       const data = await res.json().catch(err => {
         console.error("No pude parsear JSON:", err);
         return null;
@@ -1061,6 +1110,7 @@
       applyBackendPrices();
       updateUI();
       updateCartRow();
+      updateTotalPointsDisplay();
     } catch (err) {
       console.error("Error cargando precios desde Google Sheets. Se usan valores por defecto.", err);
     }
@@ -1080,23 +1130,26 @@
   const nextBtn = document.getElementById("nextBtn");
 
   const PRODUCT_LIST = document.getElementById("productList");
-  const SUBTOTAL_LABEL = document.getElementById("subtotalLabel");
-  const SUBTOTAL_DISPLAY = document.getElementById("subtotalDisplay");
-  const POINTS_DISPLAY = document.getElementById("pointsDisplay");
-  const ADD_BTN = document.getElementById("addBtn");
   const CART_ROW = document.getElementById("cartRow");
+  const ADD_BTN = document.getElementById("addBtn");
+  const POINTS_DISPLAY = document.getElementById("pointsDisplay");
 
   const CART_MODAL = document.getElementById("cartModal");
   const CART_ITEMS = document.getElementById("cartItems");
   const CART_TOTAL = document.getElementById("cartTotal");
   const CART_CLOSE_BTN = document.getElementById("cartCloseBtn");
   const CART_OK_BTN = document.getElementById("cartOkBtn");
-  const CART_BUY_BTN = document.getElementById("cartBuyBtn");
+  const CART_CONFIRM_BTN = document.getElementById("cartConfirmBtn");
 
-  const CLIENT_NAME = document.getElementById("clientName");
-  const CLIENT_PHONE = document.getElementById("clientPhone");
-  const CLIENT_COMMENTS = document.getElementById("clientComments");
-  const CLIENT_PROMO = document.getElementById("clientPromo");
+  const CONFIRM_MODAL = document.getElementById("confirmModal");
+  const CONFIRM_CLOSE_BTN = document.getElementById("confirmCloseBtn");
+  const CONFIRM_BACK_CART_BTN = document.getElementById("confirmBackToCartBtn");
+  const CONFIRM_SEND_BTN = document.getElementById("confirmSendBtn");
+  const CONFIRM_PHONE = document.getElementById("confirmPhone");
+  const CONFIRM_NAME = document.getElementById("confirmName");
+  const CONFIRM_NOTES = document.getElementById("confirmNotes");
+  const POINTS_INFO = document.getElementById("pointsInfo");
+  const POINTS_INFO_MUTED = document.getElementById("pointsInfoMuted");
 
   let currentIndex = 0;
   let slides = [];
@@ -1106,7 +1159,7 @@
 
   const cart = [];
   const selectionState = {};
-  let expandedId = null; // por defecto panel oculto
+  let expandedId = null;
 
   function getSelection(prodId) {
     if (!selectionState[prodId]) {
@@ -1128,8 +1181,6 @@
     return Math.round(prod.precioKg * (gramos / 1000));
   }
 
-  /* ----- CONFETTI ----- */
-
   function triggerConfettiFromElement(el) {
     const rect = el.getBoundingClientRect();
     const x = rect.left + rect.width / 2;
@@ -1141,7 +1192,7 @@
     container.style.top = "0px";
 
     const colors = ["#ffd54a", "#ff8a65", "#4dd0e1", "#ce93d8", "#81c784"];
-       const pieces = 24;
+    const pieces = 24;
 
     for (let i = 0; i < pieces; i++) {
       const piece = document.createElement("div");
@@ -1161,8 +1212,6 @@
     document.body.appendChild(container);
     setTimeout(() => container.remove(), 800);
   }
-
-  /* ----- CARRUSEL ----- */
 
   function createSlides() {
     PRODUCTS.forEach((p, idx) => {
@@ -1192,7 +1241,7 @@
       slide.addEventListener("click", () => {
         const index = Number(slide.dataset.index);
         currentIndex = index;
-        expandedId = PRODUCTS[index].id; // abre panel al tocar imagen
+        expandedId = PRODUCTS[index].id;
         updateUI();
       });
 
@@ -1207,7 +1256,7 @@
       d.dataset.index = idx.toString();
       d.addEventListener("click", () => {
         currentIndex = idx;
-        expandedId = null; // solo navegar
+        expandedId = null;
         updateUI();
       });
       dotsContainer.appendChild(d);
@@ -1234,8 +1283,6 @@
     const offset = currentIndex * slideWidth;
     track.style.transform = `translateX(-${offset}px)`;
   }
-
-  /* ----- LISTA INFERIOR + PANEL ----- */
 
   function applyPicanteStyle(selectEl) {
     if (!selectEl) return;
@@ -1302,7 +1349,6 @@
         panel.className = "product-details-panel";
 
         if (prod.tipo === "combo") {
-          // Panel especial: sin peso, solo picante + notas
           panel.innerHTML = `
             <div class="field-block">
               <div class="field-label">Picante</div>
@@ -1325,14 +1371,13 @@
             </div>
           `;
         } else {
-          // Panel normal con PESO (select 500 / 1000) + picante + notas
           panel.innerHTML = `
             <div class="field-row">
               <div class="field-block">
-                <div class="field-label">Peso (g)</div>
+                <div class="field-label">Peso</div>
                 <select class="field-select" data-field="peso">
-                  <option value="500"${state.peso === 500 ? " selected" : ""}>500 g (½ kilo)</option>
-                  <option value="1000"${state.peso === 1000 ? " selected" : ""}>1000 g (1 kilo)</option>
+                  <option value="500"${state.peso === 500 ? " selected" : ""}>500 g</option>
+                  <option value="1000"${state.peso === 1000 ? " selected" : ""}>1 000 g</option>
                 </select>
               </div>
               <div class="field-block">
@@ -1395,43 +1440,21 @@
     });
   }
 
-  /* ----- HERO + SUBTOTAL ----- */
-
   function updateHero() {
     const prod = PRODUCTS[currentIndex];
     HERO_NAME.textContent = prod.nombre;
     HERO_SUB.textContent = prod.tagline || "Producto Monte Alto";
     HERO_META.textContent = prod.rinde;
 
-    let subtotal = 0;
-
     if (prod.tipo === "combo") {
       HERO_PRICE.textContent = formatoColones(prod.precioKg);
       HERO_RIGHT_META.textContent = "";
-      SUBTOTAL_LABEL.textContent = "Subtotal combo";
-      subtotal = prod.precioKg || 0;
-      SUBTOTAL_DISPLAY.textContent = subtotal > 0
-        ? formatoColones(subtotal)
-        : "Sin precio";
     } else {
       HERO_PRICE.textContent = `${formatoColones(prod.precioKg)} / kg`;
       HERO_RIGHT_META.textContent = "500 g sugeridos";
-      SUBTOTAL_LABEL.textContent = "Subtotal estimado (500 g)";
-      subtotal = calcularSubtotalKg(prod, gramosBase);
-      SUBTOTAL_DISPLAY.textContent = subtotal > 0
-        ? formatoColones(subtotal)
-        : "—";
     }
 
     HERO_DESC.textContent = prod.descHero;
-  }
-
-  /* ----- CARRITO + PUNTOS TOTALES ----- */
-
-  function updateTotalPointsDisplay() {
-    const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
-    const puntosTotales = Math.floor(totalColones / colonesPorPunto);
-    POINTS_DISPLAY.textContent = puntosTotales + " pts";
   }
 
   function updateCartRow() {
@@ -1440,7 +1463,16 @@
     CART_ROW.firstElementChild.textContent =
       `Carrito: ${totalProductos} producto${totalProductos !== 1 ? "s" : ""}`;
     CART_ROW.lastElementChild.textContent = formatoColones(totalColones);
-    updateTotalPointsDisplay();
+  }
+
+  function getTotalPointsFromCart() {
+    const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
+    return Math.floor(totalColones / colonesPorPunto);
+  }
+
+  function updateTotalPointsDisplay() {
+    const puntos = getTotalPointsFromCart();
+    POINTS_DISPLAY.textContent = puntos + " pts";
   }
 
   function addToCart(prod, stateOverride) {
@@ -1452,7 +1484,7 @@
       gramos = gramosComboFijo;
       subtotal = prod.precioKg || priceComboTotal;
     } else {
-      gramos = Number(state.peso) || gramosBase; // 500 o 1000
+      gramos = Number(state.peso) || gramosBase;
       subtotal = calcularSubtotalKg(prod, gramos);
     }
 
@@ -1465,6 +1497,7 @@
       subtotal
     });
     updateCartRow();
+    updateTotalPointsDisplay();
     console.log("Carrito (demo):", cart);
   }
 
@@ -1473,7 +1506,7 @@
     if (!cart.length) {
       const empty = document.createElement("div");
       empty.textContent = "Tu carrito está vacío.";
-      empty.style.fontSize = "12px";
+      empty.style.fontSize = "13px";
       empty.style.color = "#b6b0cf";
       CART_ITEMS.appendChild(empty);
     } else {
@@ -1510,9 +1543,6 @@
 
     const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
     CART_TOTAL.textContent = formatoColones(totalColones);
-
-    // Habilitar / deshabilitar botón verde de compra
-    CART_BUY_BTN.disabled = !cart.length;
   }
 
   function openCartModal() {
@@ -1524,6 +1554,15 @@
     CART_MODAL.classList.remove("show");
   }
 
+  function openConfirmModal() {
+    CART_MODAL.classList.remove("show");
+    CONFIRM_MODAL.classList.add("show");
+  }
+
+  function closeConfirmModal() {
+    CONFIRM_MODAL.classList.remove("show");
+  }
+
   ADD_BTN.addEventListener("click", openCartModal);
   CART_CLOSE_BTN.addEventListener("click", closeCartModal);
   CART_OK_BTN.addEventListener("click", closeCartModal);
@@ -1531,88 +1570,25 @@
     if (e.target === CART_MODAL) closeCartModal();
   });
 
-  async function sendOrder() {
-    if (!cart.length) {
-      alert("Tu carrito está vacío.");
-      return;
-    }
+  CART_CONFIRM_BTN.addEventListener("click", openConfirmModal);
 
-    const nombre = (CLIENT_NAME.value || "").trim();
-    const telefono = (CLIENT_PHONE.value || "").trim();
-    const comentariosExtra = (CLIENT_COMMENTS.value || "").trim();
-    const promoAccepted = CLIENT_PROMO.checked ? "yes" : "";
+  CONFIRM_CLOSE_BTN.addEventListener("click", closeConfirmModal);
+  CONFIRM_BACK_CART_BTN.addEventListener("click", () => {
+    closeConfirmModal();
+    openCartModal();
+  });
+  CONFIRM_MODAL.addEventListener("click", (e) => {
+    if (e.target === CONFIRM_MODAL) closeConfirmModal();
+  });
 
-    if (!nombre || !telefono) {
-      alert("Por favor ingresá tu nombre y teléfono.");
-      return;
-    }
-
-    const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
-    const pesoTotal = cart.reduce((sum, item) => sum + (item.gramos || 0), 0);
-
-    // Resumen de ítems
-    const cartLines = cart.map(item =>
-      `${item.nombre} – ${item.gramos} g` +
-      (item.picante === "Sí" ? " (picante)" : "") +
-      (item.notas ? " | " + item.notas : "")
-    ).join("\n");
-
-    const comentariosFinales = comentariosExtra
-      ? comentariosExtra + "\n\nDetalle del pedido:\n" + cartLines
-      : "Detalle del pedido:\n" + cartLines;
-
-    const payload = {
-      action: "saveOrder",
-      sessionId: SESSION_ID,
-      nombre,
-      telefono,
-      comentarios: comentariosFinales,
-      cantidad: cart.length,
-      totalColones: totalColones,
-      totalBrutoColones: totalColones,
-      pesoTotalGramos: pesoTotal,
-      productoId: "LAB_REEL",
-      presentacionResumen: "Pedido app laboratorio",
-      discountCode: "",
-      promoAccepted
-    };
-
-    CART_BUY_BTN.disabled = true;
-    const oldText = CART_BUY_BTN.textContent;
-    CART_BUY_BTN.textContent = "Enviando...";
-
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json().catch(() => null);
-
-      if (!data || data.success === false) {
-        console.error("Respuesta saveOrder:", data);
-        throw new Error(data && data.message ? data.message : "Error al registrar el pedido");
-      }
-
-      alert("¡Gracias! Tu pedido ha sido registrado.");
-      // Reset de carrito y campos
-      cart.length = 0;
-      updateCartRow();
-      CLIENT_COMMENTS.value = "";
-      // (Nombre y teléfono los dejamos por si hace otro pedido seguido)
-      closeCartModal();
-    } catch (err) {
-      console.error(err);
-      alert("No se pudo completar el pedido. Podés intentarlo de nuevo.");
-    } finally {
-      CART_BUY_BTN.disabled = false;
-      CART_BUY_BTN.textContent = oldText;
-    }
-  }
-
-  CART_BUY_BTN.addEventListener("click", sendOrder);
-
-  /* ----- CONTROL FLECHAS Y RESIZE ----- */
+  // De momento, Confirmar pedido solo hace log; luego conectamos saveOrder
+  CONFIRM_SEND_BTN.addEventListener("click", () => {
+    const telefonoLimpio = normalizarTelefono(CONFIRM_PHONE.value);
+    const nombre = CONFIRM_NAME.value.trim();
+    const notas = CONFIRM_NOTES.value.trim();
+    console.log("Confirmar pedido → (demo)", { telefonoLimpio, nombre, notas, cart });
+    alert("Esta pantalla todavía es de pruebas. El pedido no se ha enviado aún. 🙂");
+  });
 
   prevBtn.addEventListener("click", () => {
     currentIndex = (currentIndex - 1 + PRODUCTS.length) % PRODUCTS.length;
@@ -1628,23 +1604,98 @@
 
   window.addEventListener("resize", updateTrackPosition);
 
-  /* ----- ORQUESTA FINAL ----- */
-
   function updateUI() {
     updateCarouselClasses();
     updateDots();
     updateTrackPosition();
     updateHero();
     renderProductList();
-    updateTotalPointsDisplay();
   }
 
+  // ----- Paso 2: Celular + puntos acumulados -----
+
+  function normalizarTelefono(valor) {
+    return (valor || "").toString().replace(/\D/g, "");
+  }
+
+  let buscandoPuntos = false;
+  let ultimoTelefonoConsultado = "";
+
+  async function consultarPuntos(telefonoLimpio) {
+    try {
+      buscandoPuntos = true;
+      ultimoTelefonoConsultado = telefonoLimpio;
+      POINTS_INFO.style.display = "none";
+      POINTS_INFO_MUTED.textContent = "Consultando tus puntos acumulados...";
+
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "getPoints",
+          telefono: telefonoLimpio
+        })
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!data || data.success === false) {
+        POINTS_INFO.style.display = "none";
+        POINTS_INFO_MUTED.textContent = "No se pudieron obtener los puntos. Podés intentarlo de nuevo.";
+        return;
+      }
+
+      const puntos = Number(data.points || 0);
+      POINTS_INFO_MUTED.textContent = "";
+      POINTS_INFO.textContent = `🎉 Tenés ${puntos} puntos acumulados en Monte Alto 🧡`;
+      POINTS_INFO.style.display = "block";
+    } catch (err) {
+      console.error("Error al consultar puntos:", err);
+      POINTS_INFO.style.display = "none";
+      POINTS_INFO_MUTED.textContent = "No se pudieron obtener los puntos. Podés intentarlo de nuevo.";
+    } finally {
+      buscandoPuntos = false;
+    }
+  }
+
+  function onTelefonoInput(e) {
+    const crudo = e.target.value;
+    const limpio = normalizarTelefono(crudo);
+
+    if (crudo !== limpio) {
+      e.target.value = limpio;
+    }
+
+    if (limpio.length < 8) {
+      POINTS_INFO.style.display = "none";
+      POINTS_INFO_MUTED.textContent = "Escribí tu número (8 dígitos) para ver tus puntos Monte Alto.";
+      CONFIRM_SEND_BTN.disabled = true;
+      return;
+    }
+
+    CONFIRM_SEND_BTN.disabled = false;
+
+    if (limpio.length >= 8 && !buscandoPuntos) {
+      consultarPuntos(limpio.slice(-8));
+    }
+  }
+
+  CONFIRM_PHONE.addEventListener("input", onTelefonoInput);
+
+  function onConfirmFieldsChange() {
+    const tel = normalizarTelefono(CONFIRM_PHONE.value);
+    const nom = CONFIRM_NAME.value.trim();
+    CONFIRM_SEND_BTN.disabled = !(tel.length >= 8 && nom.length > 0);
+  }
+
+  CONFIRM_NAME.addEventListener("input", onConfirmFieldsChange);
+  CONFIRM_NOTES.addEventListener("input", onConfirmFieldsChange);
+
   // inicialización
-  applyBackendPrices();   // usa defaults primero
+  applyBackendPrices();
   createSlides();
   updateUI();
   updateCartRow();
-  loadPricesFromSheet();  // luego intenta traer precios reales del Sheet
+  updateTotalPointsDisplay();
+  loadPricesFromSheet();
 </script>
 </body>
 </html>
