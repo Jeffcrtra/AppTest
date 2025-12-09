@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>10.52 Embutidos Monte Alto</title>
+  <title>11.15 Embutidos Monte Alto</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -784,7 +784,7 @@
 </div>
 
 <script>
-  // URL de tu Apps Script (ya me la habías dado antes)
+  // URL de tu Apps Script
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5o0Eh7wkHE-idcreykcD7n4cTIn0OoXriF5219WOQVveAMAKJQEKZ/exec";
 
   // Valores por defecto (se usan hasta que lleguen los del Sheet)
@@ -882,7 +882,7 @@
       id: "combo",
       nombre: "Combo surtido Monte Alto",
       tipo: "combo",
-      precioKg: 25000, // este es el precio total del combo, no /kg
+      precioKg: 25000, // precio total del combo, no /kg
       favorito: false,
       featureIcon: "🌟",
       featureText: "Serás la estrella de la fiesta",
@@ -912,24 +912,24 @@
       console.log("Llamando a getLabPrices en Apps Script...");
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // sin headers → request simple, sin preflight
         body: JSON.stringify({ action: "getLabPrices" })
       });
-  
+
       console.log("HTTP status:", res.status, res.statusText);
-  
+
       const data = await res.json().catch(err => {
         console.error("No pude parsear JSON:", err);
         return null;
       });
-  
+
       console.log("Respuesta getLabPrices:", data);
-  
+
       if (!data || data.success === false) {
         console.error("getLabPrices devolvió error o formato inesperado");
         return;
       }
-  
+
       if (typeof data.chorizo === "number" && data.chorizo > 0) {
         priceChorizo = data.chorizo;
       }
@@ -939,7 +939,7 @@
       if (typeof data.comboTotal === "number" && data.comboTotal > 0) {
         priceComboTotal = data.comboTotal;
       }
-  
+
       applyBackendPrices();
       updateUI();
       updateCartRow();
@@ -947,7 +947,6 @@
       console.error("Error cargando precios desde Google Sheets. Se usan valores por defecto.", err);
     }
   }
-
 
   const HERO_NAME = document.getElementById("heroName");
   const HERO_PRICE = document.getElementById("heroPrice");
@@ -1272,7 +1271,7 @@
     });
   }
 
-  /* ----- HERO + SUBTOTAL/PUNTOS (500 g referencia o combo total) ----- */
+  /* ----- HERO + SUBTOTAL/PUNTOS ----- */
 
   function updateHero() {
     const prod = PRODUCTS[currentIndex];
@@ -1311,7 +1310,8 @@
   function updateCartRow() {
     const totalProductos = cart.length;
     const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
-    CART_ROW.firstElementChild.textContent = `Carrito: ${totalProductos} producto${totalProductos !== 1 ? "s" : ""}`;
+    CART_ROW.firstElementChild.textContent =
+      `Carrito: ${totalProductos} producto${totalProductos !== 1 ? "s" : ""}`;
     CART_ROW.lastElementChild.textContent = formatoColones(totalColones);
   }
 
@@ -1435,4 +1435,3 @@
 </script>
 </body>
 </html>
-
