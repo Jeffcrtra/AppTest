@@ -433,8 +433,8 @@
       padding: 7px 9px;
       font-size: 13px;
       font-family: inherit;
-      color: #f7fafe;
-      background: rgba(255,255,255,0.06); /* más claro */
+      color: #0a0a0a;
+      background: #e4f5ff; /* más claro */
       outline: none;
     }
 
@@ -807,13 +807,33 @@
       opacity: 0.5;
       cursor: default;
     }
+
+    button,
+    .btn-primary,
+    .btn-mini-add,
+    .modal-btn-ok,
+    .arrow-btn {
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    
+    button:active,
+    .btn-primary:active,
+    .btn-mini-add:active,
+    .modal-btn-ok:active,
+    .arrow-btn:active {
+      transform: scale(0.94);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+
+    
   </style>
 </head>
 <body>
 <div class="app">
   <div class="card-top">
     <div class="title-section">
-      <h1>Embutidos Monte Alto</h1>
+      <h1>3.37 Embutidos Monte Alto</h1>
       <div class="hero-name-row">
         <div class="hero-name" id="heroName">Bratwurst</div>
         <div class="hero-price" id="heroPrice">₡8 900 / kg</div>
@@ -1699,3 +1719,4 @@
 </script>
 </body>
 </html>
+
