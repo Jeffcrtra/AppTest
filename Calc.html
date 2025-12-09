@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>12.52 Embutidos Monte Alto</title>
+  <title>10.52 Embutidos Monte Alto</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -758,7 +758,7 @@
         <span class="icon">＋</span>
       </button>
       <div class="points-row">
-        <span>Puntos acumulables por esta compra:</span>
+        <span>Puntos acumulables por tu compra:</span>
         <span class="highlight" id="pointsDisplay">0 pts</span>
       </div>
     </div>
@@ -784,13 +784,13 @@
 </div>
 
 <script>
-  // URL de tu Apps Script
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZALfVQXHrTZjzAxKzWM0dIakHL867J725s1b4NbolZW_e8yP/exec";
+// URL de tu Apps Script
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZALfVQXHrTZjzAxKzWM0dIakHL867J725s1b4NbolZW_e8yP/exec";
 
   // Valores por defecto (se usan hasta que lleguen los del Sheet)
-  let priceChorizo = 850;
-  let priceTocineta = 1000;
-  let priceComboTotal = 2500;
+  let priceChorizo = 8500;
+  let priceTocineta = 10000;
+  let priceComboTotal = 25000;
 
   // Productos Monte Alto – laboratorio carrusel
   const PRODUCTS = [
@@ -882,7 +882,7 @@
       id: "combo",
       nombre: "Combo surtido Monte Alto",
       tipo: "combo",
-      precioKg: 25000, // precio total del combo, no /kg
+      precioKg: 25000, // precio total del combo
       favorito: false,
       featureIcon: "🌟",
       featureText: "Serás la estrella de la fiesta",
@@ -912,7 +912,6 @@
       console.log("Llamando a getLabPrices en Apps Script...");
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
-        // sin headers → request simple, sin preflight
         body: JSON.stringify({ action: "getLabPrices" })
       });
 
@@ -1106,7 +1105,7 @@
 
   function updateTrackPosition() {
     if (!slides.length) return;
-    const slideWidth = viewportEl.offsetWidth; // evitar corrimiento acumulado
+    const slideWidth = viewportEl.offsetWidth;
     const offset = currentIndex * slideWidth;
     track.style.transform = `translateX(-${offset}px)`;
   }
@@ -1271,7 +1270,7 @@
     });
   }
 
-  /* ----- HERO + SUBTOTAL/PUNTOS ----- */
+  /* ----- HERO + SUBTOTAL ----- */
 
   function updateHero() {
     const prod = PRODUCTS[currentIndex];
@@ -1301,11 +1300,17 @@
 
     HERO_DESC.textContent = prod.descHero;
 
-    const puntos = subtotal > 0 ? Math.floor(subtotal / colonesPorPunto) : 0;
-    POINTS_DISPLAY.textContent = puntos + " pts";
+    // Ya no calculamos puntos por producto aquí;
+    // ahora los puntos se calculan por TODO el carrito.
   }
 
-  /* ----- CARRITO ----- */
+  /* ----- CARRITO + PUNTOS TOTALES ----- */
+
+  function updateTotalPointsDisplay() {
+    const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
+    const puntosTotales = Math.floor(totalColones / colonesPorPunto);
+    POINTS_DISPLAY.textContent = puntosTotales + " pts";
+  }
 
   function updateCartRow() {
     const totalProductos = cart.length;
@@ -1313,6 +1318,7 @@
     CART_ROW.firstElementChild.textContent =
       `Carrito: ${totalProductos} producto${totalProductos !== 1 ? "s" : ""}`;
     CART_ROW.lastElementChild.textContent = formatoColones(totalColones);
+    updateTotalPointsDisplay();
   }
 
   function addToCart(prod, stateOverride) {
@@ -1424,6 +1430,7 @@
     updateTrackPosition();
     updateHero();
     renderProductList();
+    updateTotalPointsDisplay();
   }
 
   // inicialización
@@ -1435,6 +1442,3 @@
 </script>
 </body>
 </html>
-
-
-
