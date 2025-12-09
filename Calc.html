@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>2.35 Embutidos Monte Alto</title>
+  <title>10.52 Embutidos Monte Alto</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -785,7 +785,7 @@
 
 <script>
   // URL de tu Apps Script (ya me la habías dado antes)
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrWQZfdFBOSo75tNlCjHXtad67DKMu5BzXOU7mapsZmVzQWC7td4Y7XpD96EdwxYGj/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6r1oogKYA6uD5o0Eh7wkHE-idcreykcD7n4cTIn0OoXriF5219WOQVveAMAKJQEKZ/exec";
 
   // Valores por defecto (se usan hasta que lleguen los del Sheet)
   let priceChorizo = 8500;
@@ -909,15 +909,37 @@
 
   async function loadPricesFromSheet() {
     try {
+      console.log("Llamando a getLabPrices en Apps Script...");
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "getLabPrices" })
       });
-      const data = await res.json();
-      if (typeof data.chorizo === "number") priceChorizo = data.chorizo;
-      if (typeof data.tocineta === "number") priceTocineta = data.tocineta;
-      if (typeof data.comboTotal === "number") priceComboTotal = data.comboTotal;
+  
+      console.log("HTTP status:", res.status, res.statusText);
+  
+      const data = await res.json().catch(err => {
+        console.error("No pude parsear JSON:", err);
+        return null;
+      });
+  
+      console.log("Respuesta getLabPrices:", data);
+  
+      if (!data || data.success === false) {
+        console.error("getLabPrices devolvió error o formato inesperado");
+        return;
+      }
+  
+      if (typeof data.chorizo === "number" && data.chorizo > 0) {
+        priceChorizo = data.chorizo;
+      }
+      if (typeof data.tocineta === "number" && data.tocineta > 0) {
+        priceTocineta = data.tocineta;
+      }
+      if (typeof data.comboTotal === "number" && data.comboTotal > 0) {
+        priceComboTotal = data.comboTotal;
+      }
+  
       applyBackendPrices();
       updateUI();
       updateCartRow();
@@ -925,6 +947,7 @@
       console.error("Error cargando precios desde Google Sheets. Se usan valores por defecto.", err);
     }
   }
+
 
   const HERO_NAME = document.getElementById("heroName");
   const HERO_PRICE = document.getElementById("heroPrice");
@@ -1412,3 +1435,4 @@
 </script>
 </body>
 </html>
+
