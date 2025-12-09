@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>2.18 Embutidos Monte Alto</title>
+  <title>2.33 Embutidos Monte Alto</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -651,7 +651,7 @@
     }
 
     .cart-items {
-      max-height: 220px;
+      max-height: 180px;
       overflow-y: auto;
       padding-right: 6px;
       margin-bottom: 8px;
@@ -679,6 +679,66 @@
     .cart-item-notes {
       font-size: 11px;
       color: #b6b0cf;
+    }
+
+    .modal-form {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 8px;
+    }
+
+    .modal-form-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #e2def8;
+    }
+
+    .modal-form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 6px;
+      font-size: 11px;
+    }
+
+    .modal-form-row label {
+      color: #cbc6ea;
+    }
+
+    .modal-form-row input,
+    .modal-form-row textarea {
+      border-radius: 8px;
+      border: none;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: inherit;
+      color: #f7fafe;
+      background: #151726;
+      outline: none;
+    }
+
+    .modal-form-row input::placeholder,
+    .modal-form-row textarea::placeholder {
+      color: rgba(230,242,255,0.7);
+    }
+
+    .modal-form-row textarea {
+      resize: vertical;
+      min-height: 40px;
+      max-height: 80px;
+    }
+
+    .modal-form-row.checkbox-row {
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-form-row.checkbox-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
     }
 
     .modal-footer {
@@ -772,8 +832,8 @@
 
     <div class="bottom-footer">
       <div class="subtotal-row">
-        <span id="subtotalLabel">  </span>
-        <strong id="subtotalDisplay">  </strong>
+        <span id="subtotalLabel">Subtotal estimado (500 g)</span>
+        <strong id="subtotalDisplay">₡0</strong>
       </div>
       <div class="cart-row" id="cartRow">
         <span>Carrito: 0 productos</span>
@@ -791,7 +851,7 @@
   </div>
 </div>
 
-<!-- Modal carrito -->
+<!-- Modal carrito + confirmación -->
 <div id="cartModal" class="modal-backdrop">
   <div class="modal-panel">
     <div class="modal-header">
@@ -799,6 +859,31 @@
       <button class="modal-close" id="cartCloseBtn">✕</button>
     </div>
     <div class="cart-items" id="cartItems"></div>
+
+    <div class="modal-form">
+      <div class="modal-form-title">Confirmación del pedido</div>
+
+      <div class="modal-form-row">
+        <label for="clientName">Nombre completo *</label>
+        <input id="clientName" type="text" placeholder="Nombre y apellidos">
+      </div>
+
+      <div class="modal-form-row">
+        <label for="clientPhone">Teléfono *</label>
+        <input id="clientPhone" type="tel" placeholder="Ej: 8888-0000">
+      </div>
+
+      <div class="modal-form-row">
+        <label for="clientComments">Notas adicionales (opcional)</label>
+        <textarea id="clientComments" placeholder="Ej: Entrega urgente, mejor horario, etc."></textarea>
+      </div>
+
+      <div class="modal-form-row checkbox-row">
+        <input id="clientPromo" type="checkbox">
+        <label for="clientPromo">Quiero recibir promociones y novedades de Monte Alto</label>
+      </div>
+    </div>
+
     <div class="modal-footer">
       <div class="modal-footer-row">
         <span>Total:</span>
@@ -813,6 +898,13 @@
 <script>
   // URL de tu Apps Script
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZALfVQXHrTZjzAxKzWM0dIakHL867J725s1b4NbolZW_e8yP/exec";
+
+  // ID de sesión simple para este dispositivo
+  const SESSION_ID =
+    "LAB-" +
+    Math.random().toString(36).slice(2) +
+    "-" +
+    Date.now().toString(36);
 
   // Valores por defecto (se usan hasta que lleguen los del Sheet)
   let priceChorizo = 8500;
@@ -1001,6 +1093,11 @@
   const CART_OK_BTN = document.getElementById("cartOkBtn");
   const CART_BUY_BTN = document.getElementById("cartBuyBtn");
 
+  const CLIENT_NAME = document.getElementById("clientName");
+  const CLIENT_PHONE = document.getElementById("clientPhone");
+  const CLIENT_COMMENTS = document.getElementById("clientComments");
+  const CLIENT_PROMO = document.getElementById("clientPromo");
+
   let currentIndex = 0;
   let slides = [];
   const gramosBase = 500;
@@ -1044,7 +1141,7 @@
     container.style.top = "0px";
 
     const colors = ["#ffd54a", "#ff8a65", "#4dd0e1", "#ce93d8", "#81c784"];
-    const pieces = 24;
+       const pieces = 24;
 
     for (let i = 0; i < pieces; i++) {
       const piece = document.createElement("div");
@@ -1319,7 +1416,7 @@
     } else {
       HERO_PRICE.textContent = `${formatoColones(prod.precioKg)} / kg`;
       HERO_RIGHT_META.textContent = "500 g sugeridos";
-      SUBTOTAL_LABEL.textContent = "  ";
+      SUBTOTAL_LABEL.textContent = "Subtotal estimado (500 g)";
       subtotal = calcularSubtotalKg(prod, gramosBase);
       SUBTOTAL_DISPLAY.textContent = subtotal > 0
         ? formatoColones(subtotal)
@@ -1415,11 +1512,7 @@
     CART_TOTAL.textContent = formatoColones(totalColones);
 
     // Habilitar / deshabilitar botón verde de compra
-    if (!cart.length) {
-      CART_BUY_BTN.disabled = true;
-    } else {
-      CART_BUY_BTN.disabled = false;
-    }
+    CART_BUY_BTN.disabled = !cart.length;
   }
 
   function openCartModal() {
@@ -1438,12 +1531,86 @@
     if (e.target === CART_MODAL) closeCartModal();
   });
 
-  CART_BUY_BTN.addEventListener("click", () => {
-    if (!cart.length) return;
-    // Aquí luego conectamos con el siguiente paso real (formulario, WhatsApp, etc.)
-    console.log("Ir al siguiente paso de compra con carrito:", cart);
-    alert("Aquí iría el siguiente paso de compra (por definir).");
-  });
+  async function sendOrder() {
+    if (!cart.length) {
+      alert("Tu carrito está vacío.");
+      return;
+    }
+
+    const nombre = (CLIENT_NAME.value || "").trim();
+    const telefono = (CLIENT_PHONE.value || "").trim();
+    const comentariosExtra = (CLIENT_COMMENTS.value || "").trim();
+    const promoAccepted = CLIENT_PROMO.checked ? "yes" : "";
+
+    if (!nombre || !telefono) {
+      alert("Por favor ingresá tu nombre y teléfono.");
+      return;
+    }
+
+    const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
+    const pesoTotal = cart.reduce((sum, item) => sum + (item.gramos || 0), 0);
+
+    // Resumen de ítems
+    const cartLines = cart.map(item =>
+      `${item.nombre} – ${item.gramos} g` +
+      (item.picante === "Sí" ? " (picante)" : "") +
+      (item.notas ? " | " + item.notas : "")
+    ).join("\n");
+
+    const comentariosFinales = comentariosExtra
+      ? comentariosExtra + "\n\nDetalle del pedido:\n" + cartLines
+      : "Detalle del pedido:\n" + cartLines;
+
+    const payload = {
+      action: "saveOrder",
+      sessionId: SESSION_ID,
+      nombre,
+      telefono,
+      comentarios: comentariosFinales,
+      cantidad: cart.length,
+      totalColones: totalColones,
+      totalBrutoColones: totalColones,
+      pesoTotalGramos: pesoTotal,
+      productoId: "LAB_REEL",
+      presentacionResumen: "Pedido app laboratorio",
+      discountCode: "",
+      promoAccepted
+    };
+
+    CART_BUY_BTN.disabled = true;
+    const oldText = CART_BUY_BTN.textContent;
+    CART_BUY_BTN.textContent = "Enviando...";
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!data || data.success === false) {
+        console.error("Respuesta saveOrder:", data);
+        throw new Error(data && data.message ? data.message : "Error al registrar el pedido");
+      }
+
+      alert("¡Gracias! Tu pedido ha sido registrado.");
+      // Reset de carrito y campos
+      cart.length = 0;
+      updateCartRow();
+      CLIENT_COMMENTS.value = "";
+      // (Nombre y teléfono los dejamos por si hace otro pedido seguido)
+      closeCartModal();
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo completar el pedido. Podés intentarlo de nuevo.");
+    } finally {
+      CART_BUY_BTN.disabled = false;
+      CART_BUY_BTN.textContent = oldText;
+    }
+  }
+
+  CART_BUY_BTN.addEventListener("click", sendOrder);
 
   /* ----- CONTROL FLECHAS Y RESIZE ----- */
 
@@ -1481,5 +1648,3 @@
 </script>
 </body>
 </html>
-
-
