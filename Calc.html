@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>10.52 Embutidos Monte Alto</title>
+  <title>2.12 Embutidos Monte Alto</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -545,16 +545,22 @@
     }
 
     .points-row {
+      margin-top: 4px;
       font-size: 11px;
       color: #ada6c7;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .points-row span.highlight {
       color: #ffe789;
       font-weight: 600;
+      font-size: 12px;
     }
 
     @media (max-width: 360px) {
@@ -688,8 +694,28 @@
       align-items: center;
     }
 
-    .modal-btn-ok {
+    .modal-btn-primary {
       margin-top: 4px;
+      border: none;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #2ecc71;
+      color: #111;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+
+    .modal-btn-primary:disabled {
+      opacity: 0.4;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .modal-btn-ok {
+      margin-top: 2px;
       border: none;
       border-radius: 999px;
       padding: 9px 16px;
@@ -754,8 +780,8 @@
         <span>₡0</span>
       </div>
       <button class="btn-primary" id="addBtn">
-        <span>Revisar orden</span>
-        <span class="icon">＋</span>
+        <span>Completar compra</span>
+        <span class="icon">🛒</span>
       </button>
       <div class="points-row">
         <span>Puntos acumulables por tu compra:</span>
@@ -778,14 +804,15 @@
         <span>Total:</span>
         <strong id="cartTotal">₡0</strong>
       </div>
+      <button class="modal-btn-primary" id="cartBuyBtn">Completar compra</button>
       <button class="modal-btn-ok" id="cartOkBtn">Cerrar</button>
     </div>
   </div>
 </div>
 
 <script>
-// URL de tu Apps Script
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZALfVQXHrTZjzAxKzWM0dIakHL867J725s1b4NbolZW_e8yP/exec";
+  // URL de tu Apps Script
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZALfVQXHrTZjzAxKzWM0dIakHL867J725s1b4NbolZW_e8yP/exec";
 
   // Valores por defecto (se usan hasta que lleguen los del Sheet)
   let priceChorizo = 8500;
@@ -972,6 +999,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZ
   const CART_TOTAL = document.getElementById("cartTotal");
   const CART_CLOSE_BTN = document.getElementById("cartCloseBtn");
   const CART_OK_BTN = document.getElementById("cartOkBtn");
+  const CART_BUY_BTN = document.getElementById("cartBuyBtn");
 
   let currentIndex = 0;
   let slides = [];
@@ -1200,15 +1228,15 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZ
             </div>
           `;
         } else {
-          // Panel normal con peso + picante + notas
+          // Panel normal con PESO (select 500 / 1000) + picante + notas
           panel.innerHTML = `
             <div class="field-row">
               <div class="field-block">
                 <div class="field-label">Peso (g)</div>
-                <input type="number" min="100" step="50"
-                       class="field-input"
-                       value="${state.peso}"
-                       data-field="peso">
+                <select class="field-select" data-field="peso">
+                  <option value="500"${state.peso === 500 ? " selected" : ""}>500 g (½ kilo)</option>
+                  <option value="1000"${state.peso === 1000 ? " selected" : ""}>1000 g (1 kilo)</option>
+                </select>
               </div>
               <div class="field-block">
                 <div class="field-label">Picante</div>
@@ -1233,15 +1261,15 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZ
           `;
         }
 
-        const pesoInput = panel.querySelector('[data-field="peso"]');
+        const pesoSelect = panel.querySelector('[data-field="peso"]');
         const picanteSelect = panel.querySelector('[data-field="picante"]');
         const notasArea = panel.querySelector('[data-field="notas"]');
         const miniBtn = panel.querySelector(".btn-mini-add");
 
-        if (pesoInput) {
-          pesoInput.addEventListener("input", (e) => {
+        if (pesoSelect) {
+          pesoSelect.addEventListener("change", (e) => {
             const v = parseInt(e.target.value, 10);
-            state.peso = isNaN(v) ? "" : v;
+            state.peso = isNaN(v) ? gramosBase : v;
           });
         }
 
@@ -1299,9 +1327,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZ
     }
 
     HERO_DESC.textContent = prod.descHero;
-
-    // Ya no calculamos puntos por producto aquí;
-    // ahora los puntos se calculan por TODO el carrito.
   }
 
   /* ----- CARRITO + PUNTOS TOTALES ----- */
@@ -1330,7 +1355,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZ
       gramos = gramosComboFijo;
       subtotal = prod.precioKg || priceComboTotal;
     } else {
-      gramos = Number(state.peso) || gramosBase;
+      gramos = Number(state.peso) || gramosBase; // 500 o 1000
       subtotal = calcularSubtotalKg(prod, gramos);
     }
 
@@ -1388,6 +1413,13 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZ
 
     const totalColones = cart.reduce((sum, item) => sum + item.subtotal, 0);
     CART_TOTAL.textContent = formatoColones(totalColones);
+
+    // Habilitar / deshabilitar botón verde de compra
+    if (!cart.length) {
+      CART_BUY_BTN.disabled = true;
+    } else {
+      CART_BUY_BTN.disabled = false;
+    }
   }
 
   function openCartModal() {
@@ -1404,6 +1436,13 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzi1qmVcqp0Jb6Vl5HSZ
   CART_OK_BTN.addEventListener("click", closeCartModal);
   CART_MODAL.addEventListener("click", (e) => {
     if (e.target === CART_MODAL) closeCartModal();
+  });
+
+  CART_BUY_BTN.addEventListener("click", () => {
+    if (!cart.length) return;
+    // Aquí luego conectamos con el siguiente paso real (formulario, WhatsApp, etc.)
+    console.log("Ir al siguiente paso de compra con carrito:", cart);
+    alert("Aquí iría el siguiente paso de compra (por definir).");
   });
 
   /* ----- CONTROL FLECHAS Y RESIZE ----- */
